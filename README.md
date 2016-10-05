@@ -1,10 +1,8 @@
-                                  GIF_Render
-===============================================================================
+#GIF_Render
 
 A Blender 3d addon for exporting and importing animated GIF sequences.
 
-             Installation
----------------------------------------
+##Installation
 
 1. Download the [Release](https://github.com/doakey3/GIF_Render/releases). 
 2. Open Blender. 
@@ -15,8 +13,7 @@ A Blender 3d addon for exporting and importing animated GIF sequences.
   - UBUNTU: open a terminal and type:
     sudo apt-get install gifsicle imagemagick
 
-                 About
----------------------------------------
+##About
 
 Render Function:
 This addon tells blender to render the animation as PNG files. Imagemagick is used to convert the PNG files to GIF files. Gifsicle is used to combine the GIF files into a single animated GIF. 
