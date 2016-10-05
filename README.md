@@ -2,6 +2,8 @@
 
 A Blender 3d addon for exporting and importing animated GIF sequences.
 
+A video tutorial is available [here](https://www.youtube.com/watch?v=xbroTg3UN7A)
+
 ##Installation
 
 1. Download the [Release](https://github.com/doakey3/GIF_Render/releases). 
