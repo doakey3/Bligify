@@ -96,8 +96,11 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         y = -1
         for line in lines:
             if line.lstrip().startswith('+'):
-                x = int(line.split(' ')[-1].split('x')[0])
-                y = int(line.split(' ')[-1].split('x')[1])
+                split = line.split(' ')
+                for word in split:
+                    if 'x' in word:
+                        x = int(word.split('x')[0])
+                        y = int(word.split('x')[1])
             elif 'delay' in line:
                 delay = line.rstrip().split(' ')[-1]
                 delay = delay[0:len(delay)-1]
