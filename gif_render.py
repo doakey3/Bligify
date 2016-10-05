@@ -15,6 +15,7 @@ import os
 import shutil
 import subprocess
 import sys
+import math
 
 class UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
@@ -46,7 +47,7 @@ gif_quality_options = [
                 ('64','64','Limit number of colors to 64'),
 ]
 
-######################################################################
+########################################################################
 
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy_extras.io_utils import ImportHelper
@@ -136,7 +137,7 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         
         return {'FINISHED'}
 
-######################################################################
+########################################################################
 
 class RenderGIF(bpy.types.Operator):
     bl_label = 'Render GIF'
@@ -246,93 +247,117 @@ def find_sequencer_area():
         for area in screen.areas:
             if area.type == 'SEQUENCE_EDITOR':
                 return screen, area
-        
+
+########################################################################
+
 class FPSToTen(bpy.types.Operator):
     bl_label = 'FPS: 10'
     bl_idname = 'sequencerextra.fps_to_ten'
-    bl_description = 'Adjusts the scene FPS to 10, applies speed effect to selected video clips'
+    bl_description = ''.join(['Adjusts the scene FPS to 10.\n
+                        'Applies speed effect to selected video clips'])
     
     def execute(self, context):
         scene = context.scene
-        seq = scene.sequence_editor
+        sequence = scene.sequence_editor
         fps = scene.render.fps/scene.render.fps_base
+        target_fps = 10
 
-        sel = list(bpy.context.selected_editable_sequences)
-        selected = []
-        for clip in sel:
-            if clip.type == 'MOVIE':
-                selected.append(clip)
-        selected = list(sorted(selected,
-            key=lambda x: x.frame_final_start))
+        strips = selected_video_strips()
         
-        if len(selected) == 0:
+        if len(strips) == 0:
+            scene.render.fps = target_fps
+            scene.render.fps_base = 1
             return {'FINISHED'}  
 
-        scene.frame_start = selected[0].frame_final_start
+        apply_speed_modifiers(strips, scene, sequence)
+        adjust_speed_factors(scene, target_fps, sequence)
+        adjust_strip_lengths(scene, target_fps, sequence)
+
+        return {'FINISHED'}
         
-        for i in range(len(selected)):
-            bpy.ops.sequencer.select_all(action='DESELECT')
-            clip = selected[i]
-            seq.active_strip = clip
+def selected_video_strips():
+    """Gets the selected video strips and returns them as sorted list"""
+    sel = list(bpy.context.selected_editable_sequences)
+    selected = []
+    for clip in sel:
+        if clip.type == 'MOVIE':
+            selected.append(clip)
+    selected = list(sorted(selected,
+        key=lambda x: x.frame_start))
+    return selected
+    
+def apply_speed_modifiers(strips, scene, sequence):
+    """Applies speed modifier to sequence strips"""
+    for strip in strips:
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        sequence.active_strip = strip
 
-            screen, area = find_sequencer_area()
-            window = bpy.context.window
-            fs = clip.frame_final_start
-            fe = clip.frame_final_end
-            bpy.ops.sequencer.effect_strip_add(
-                {'window':window,
-                'scene':scene,
-                'area':area,
-                'screen':screen,
-                'region':area.regions[0]},
-                frame_start=fs,
-                frame_end=fe,
-                type="SPEED")
+        screen, area = find_sequencer_area()
+        window = bpy.context.window
+        bpy.ops.sequencer.effect_strip_add(
+            {'window':window,
+            'scene':scene,
+            'area':area,
+            'screen':screen,
+            'region':area.regions[0]},
+            type="SPEED")
 
-        resize_list = []
-        for strip in seq.sequences:
-            if strip.type == 'SPEED':
-                for clip in selected:
-                    se = strip.frame_final_end
-                    ss = strip.frame_final_start
-                    ce = clip.frame_final_end 
-                    cs = clip.frame_final_start
-                    if se == ce and ss == cs:
-                        strip.use_default_fade = False
-                        sf = fps/10
-                        strip.speed_factor = sf
-                        ffd = clip.frame_final_duration - 1
-                        duration = int(ffd/sf)
-                        end = clip.frame_final_start + duration + 2
-                        resize_list.append([clip,end])
+def adjust_speed_factors(scene, target_fps, sequence):
+    """
+    Adjusts the speed factor of each speed modifier to 
+    current_fps/target_fps
+    """
+    fps = scene.render.fps/scene.render.fps_base
+    for strip in sequence.sequences:
+        if strip.type == 'SPEED':
+            movie_strip = strip.input_1
+            strip.use_default_fade = False
+            speed_factor = fps/target_fps
+            strip.speed_factor = speed_factor
 
-        scene.render.fps = 10
-        scene.render.fps_base = 1
-
-        for i in range(len(resize_list)):
-            clip = resize_list[i][0]
-            end = resize_list[i][1]
-            ori_end = clip.frame_final_end
-            diff = ori_end - end
-            clip.frame_final_end = end
+def adjust_strip_lengths(scene, target_fps, sequence):
+    """
+    Change the scene fps to target_fps
+    Divide the duration of each movie strip by its speed factor
+    Set the scene end frame to the last frame of the last selected strip
+    """
+    
+    movie_strips = []
+    all_strips = list(sorted(sequence.sequences,
+        key=lambda x: x.frame_start))
+    channels = {}
+    for strip in all_strips:
+        channels[strip.name] = strip.channel
+    
+    scene.render.fps = target_fps
+    scene.render.fps_base = 1
+        
+    for strip in all_strips:
+        if strip.type == 'SPEED':
+            movie_strip = strip.input_1
+            movie_strips.append(movie_strip)
+            speed_factor = round(strip.speed_factor, 4)
+            ffd = movie_strip.frame_final_duration
+            duration = (ffd + 1)/speed_factor
+            end = movie_strip.frame_final_start + duration + 1
+            original_end = movie_strip.frame_final_end
+            difference = original_end - end
+            movie_strip.frame_final_end = end
             
-            striplist = []
-            channel_list = []
-            for strip in seq.sequences:
-                if strip.type == 'MOVIE' or strip.type == 'SOUND':
-                    if strip.frame_final_start >= ori_end:
-                        striplist.append(strip)
-                        channel_list.append(strip.channel)
+            for st in all_strips:
+                if st.frame_final_start >= original_end:
+                    if st.type == 'MOVIE' or st.type == 'SOUND':
+                        st.frame_start -= difference + (end % 1)
             
-            for strip in striplist:
-                strip.frame_start -= diff
-            
-            for i in range(len(striplist)):
-                striplist[i].channel = channel_list[i]
-            
-        scene.frame_end = resize_list[-1][0].frame_final_end - 1
+    for strip in all_strips:
+        strip.channel = channels[strip.name]
 
-        return {'FINISHED'}   
+    movie_strips = list(sorted(movie_strips, 
+        key=lambda x: x.frame_final_end))
+    last_frame = movie_strips[-1].frame_final_end - 1
+    scene.frame_end = last_frame
+            
+########################################################################
 
 class Res320x240(bpy.types.Operator):
     bl_label = '320x240'
@@ -344,6 +369,8 @@ class Res320x240(bpy.types.Operator):
         scene.render.resolution_x = 320
         scene.render.resolution_y = 240
         return {'FINISHED'}
+
+########################################################################
     
 def register():
     bpy.utils.register_class(UI)
