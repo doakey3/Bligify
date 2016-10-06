@@ -4,7 +4,7 @@ bl_info = {
     "name": "GIF Render",
     "description": "Render sequence as animated GIF",
     "author": "doakey3",
-    "version": (1, 0),
+    "version": (1, 0, 2),
     "blender": (2, 7, 8),
     "wiki_url": "",
     "tracker_url":"",
@@ -15,7 +15,8 @@ import os
 import shutil
 import subprocess
 import sys
-import math
+from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy_extras.io_utils import ImportHelper
 
 class UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
@@ -28,17 +29,22 @@ class UI(bpy.types.Panel):
         b_row = layout.row()
         box = b_row.box()
         box.label('GIF Tools')
-        box.prop_menu_enum(context.scene, 'gif_quality', text='GIF Quality', icon='SCRIPTWIN')
+        box.prop_menu_enum(context.scene, 'gif_quality', 
+            text='GIF Quality', icon='SCRIPTWIN')
         row = box.row()
         split=row.split(percentage=0.5)
         colL = split.column()
         colR = split.column()
-        colL.operator("sequencerextra.fps_to_ten", icon="RECOVER_LAST")
-        colR.operator("sequencerextra.res320x240", icon='RENDER_REGION')
+        colL.operator("sequencerextra.fps_to_ten", 
+            icon="RECOVER_LAST")
+        colR.operator("sequencerextra.res320x240", 
+            icon='RENDER_REGION')
         row = box.row()
-        row.operator('sequencerextra.render_gif',icon="RENDER_ANIMATION")
+        row.operator('sequencerextra.render_gif',
+            icon="RENDER_ANIMATION")
         row2 = box.row()
-        row.operator('sequencerextra.import_gif',icon="LIBRARY_DATA_DIRECT")
+        row.operator('sequencerextra.import_gif',
+            icon="LIBRARY_DATA_DIRECT")
         
 gif_quality_options = [
                 ('Full','Full','All colors included (bigger filesize)'),
@@ -48,9 +54,6 @@ gif_quality_options = [
 ]
 
 ########################################################################
-
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy_extras.io_utils import ImportHelper
 
 class ImportGIF(bpy.types.Operator, ImportHelper):
     bl_idname = "sequencerextra.import_gif"
@@ -66,7 +69,6 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         scene = context.scene
-        
         path = self.filepath.replace('\\','/')
         split = path.split('/')
         name = split.pop()
@@ -115,25 +117,39 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         scene.render.fps_base = 1
         
         os.remove(temp + '/info.txt')
-        command = ' '.join([gifsicle,'--explode','"' + path + '"','--output','"' + temp + '/"'])
+        command = ' '.join([gifsicle,'--explode','"' + path + '"',
+            '--output','"' + temp + '/"'])
         subprocess.call(command,shell=True)
         
         if sys.platform == 'win32':
-            converter = '"' + os.path.join(os.path.dirname(__file__),'convert.exe') + '"'
+            converter = '"' + os.path.join(os.path.dirname(__file__),
+                'convert.exe') + '"'
         else:
             converter = 'convert'
-            
-        for image in os.listdir(temp):
-            command = ' '.join([converter, temp + '/' + image, temp + '/' + image[1::] + '.png'])
+        
+        images = list(sorted(os.listdir(temp)))
+        for i in range(len(images)):
+            if i > 0:
+                command = ' '.join([converter, temp + '/' + images[i-1][1::] + '.png', 
+                    temp + '/' + images[i], '-layers','merge',
+                    temp + '/' + images[i][1::] + '.png'])
+            else:
+                command = ' '.join([converter, temp + '/' + images[i], 
+                    temp + '/' + images[i][1::] + '.png'])
             subprocess.call(command, shell=True)
-            os.remove(temp + '/' + image)
+        
+        images = os.listdir(temp)
+        for i in range(len(images)):
+            if not images[i].endswith('.png'):
+                os.remove(temp + '/' + images[i])
         
         dict_list = []
         for image in list(sorted(os.listdir(temp))):
             dict_list.append({"name":image,"name":image})
         current_frame = scene.frame_current
         
-        bpy.ops.sequencer.image_strip_add(directory=temp+'/',files=dict_list,frame_start = current_frame)
+        bpy.ops.sequencer.image_strip_add(directory=temp+'/',
+            files=dict_list,frame_start = current_frame)
         
         return {'FINISHED'}
 
@@ -142,7 +158,8 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
 class RenderGIF(bpy.types.Operator):
     bl_label = 'Render GIF'
     bl_idname = 'sequencerextra.render_gif'
-    bl_description = 'Render an animated GIF\n** Requires Gifsicle & Imagemagick **'
+    bl_description = ''.join(['Render an animated GIF\n',
+        '** Requires Gifsicle & Imagemagick **'])
     
     @classmethod
     def poll(self, context):
@@ -155,18 +172,20 @@ class RenderGIF(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
         scene.render.image_settings.file_format = "PNG"
-        
-        #If running linux, check if gifsicle and imagemagick are installed
+
         if not sys.platform == 'win32':
             try:
                 devnull = open(os.devnull)
-                subprocess.call(['convert'],stdout=devnull, stderr=devnull)
-                subprocess.call(['gifsicle'],stdout=devnull,stderr=devnull)
+                subprocess.call(['convert'],stdout=devnull, 
+                    stderr=devnull)
+                subprocess.call(['gifsicle'],stdout=devnull,
+                    stderr=devnull)
             except FileNotFoundError:
-                print('Gifsicle and Imagemagick must be installed... Ending')
+                print('Gifsicle and Imagemagick must be installed...')
                 return {'FINISHED'} 
         
-        framepath = scene.render.frame_path(scene.frame_current).replace('\\','/')
+        framepath = scene.render.frame_path(scene.frame_current)
+        framepath = framepath.replace('\\','/')
         links = framepath.split('/')
         links.pop()
         path = '/'.join(links) + '/'
@@ -174,7 +193,8 @@ class RenderGIF(bpy.types.Operator):
         
         relative_path = scene.render.filepath.replace('\\','/')
         if not relative_path.endswith('/'):
-            output_name = relative_path.split('/')[-1] + '.gif'
+            name = relative_path.split('/')[-1]
+            output_name = os.path.splitext(name)[0] + '.gif'
         else:
             output_name = 'animation.gif'
 
@@ -192,7 +212,8 @@ class RenderGIF(bpy.types.Operator):
 
         images = list(sorted(os.listdir(scene.render.filepath)))
         if sys.platform == 'win32':
-            converter = '"' + os.path.join(os.path.dirname(__file__),'convert.exe') + '"'
+            converter = '"' + os.path.join(os.path.dirname(__file__),
+                'convert.exe') + '"'
         else:
             converter = 'convert'
         for i in range(len(images)):
@@ -206,29 +227,35 @@ class RenderGIF(bpy.types.Operator):
             print(' '.join(['converted',images[i],'to .GIF']))
 
         print('Combining images into animation...')
-        pics = temp + '*.gif'
-        out = path + output_name
         
-        fps = scene.render.fps/scene.render.fps_base
-        delay = str(int(100/fps))
-        
-        quality = scene.gif_quality
-        if not quality == 'Full':
-            colors = '--colors'
-            qual = quality
-        else:
-            colors = ''
-            qual = ''
-
         if sys.platform == 'win32':
-            gifsicle = '"' + os.path.join(os.path.dirname(__file__),'gifsicle.exe') + '"'
+            gifsicle = '"' + os.path.join(os.path.dirname(__file__),
+                'gifsicle.exe') + '"'
         else:
             gifsicle = 'gifsicle'
-        command = " ".join([
-            gifsicle, '--careful', colors, qual,#'--optimize=3', <-- optimizing causes some issues with importing back in.
-            '--delay', delay, '--disposal',
-            'none', '--loop', pics, '--output', out, '--no-warnings'])
-        subprocess.call(command, shell=True)
+        
+        command = [gifsicle,'--careful', '--optimize=3', '--disposal' ,
+            'background','--no-background','--loop','--no-warnings']
+            
+        fps = scene.render.fps/scene.render.fps_base
+        delay = str(int(100/fps))
+        command.append('--delay')
+        command.append(delay)
+
+        quality = scene.gif_quality
+        if not quality == 'Full':
+            command.append('--colors')
+            command.append(quality)
+        else:
+            pass
+        
+        pics = temp + '*.gif'
+        out = path + output_name
+        command.append(pics)
+        command.append('--output')
+        command.append(out)
+
+        subprocess.call(' '.join(command), shell=True)
 
         shutil.rmtree(temp)
         
@@ -253,7 +280,7 @@ def find_sequencer_area():
 class FPSToTen(bpy.types.Operator):
     bl_label = 'FPS: 10'
     bl_idname = 'sequencerextra.fps_to_ten'
-    bl_description = ''.join(['Adjusts the scene FPS to 10.\n
+    bl_description = ''.join(['Adjusts the scene FPS to 10.\n',
                         'Applies speed effect to selected video clips'])
     
     def execute(self, context):
@@ -280,7 +307,7 @@ def selected_video_strips():
     sel = list(bpy.context.selected_editable_sequences)
     selected = []
     for clip in sel:
-        if clip.type == 'MOVIE':
+        if clip.type == 'MOVIE' or clip.type == 'SCENE':
             selected.append(clip)
     selected = list(sorted(selected,
         key=lambda x: x.frame_start))
@@ -321,7 +348,6 @@ def adjust_strip_lengths(scene, target_fps, sequence):
     Divide the duration of each movie strip by its speed factor
     Set the scene end frame to the last frame of the last selected strip
     """
-    
     movie_strips = []
     all_strips = list(sorted(sequence.sequences,
         key=lambda x: x.frame_start))
@@ -346,7 +372,7 @@ def adjust_strip_lengths(scene, target_fps, sequence):
             
             for st in all_strips:
                 if st.frame_final_start >= original_end:
-                    if st.type == 'MOVIE' or st.type == 'SOUND':
+                    if st.type == 'MOVIE' or st.type == 'SOUND' or st.type == 'SCENE':
                         st.frame_start -= difference + (end % 1)
             
     for strip in all_strips:
@@ -356,6 +382,9 @@ def adjust_strip_lengths(scene, target_fps, sequence):
         key=lambda x: x.frame_final_end))
     last_frame = movie_strips[-1].frame_final_end - 1
     scene.frame_end = last_frame
+    
+    bpy.ops.sequencer.select_all(action='DESELECT')
+    sequence.active_strip = movie_strips[0]
             
 ########################################################################
 
