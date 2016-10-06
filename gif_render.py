@@ -4,7 +4,7 @@ bl_info = {
     "name": "GIF Render",
     "description": "Render sequence as animated GIF",
     "author": "doakey3",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 7, 8),
     "wiki_url": "",
     "tracker_url":"",
@@ -249,12 +249,12 @@ class RenderGIF(bpy.types.Operator):
         else:
             pass
         
-        pics = temp + '*.gif'
-        out = path + output_name
+        pics = '"' + temp + '"' + '*.gif'
+        out = '"' + path + output_name + '"'
         command.append(pics)
         command.append('--output')
         command.append(out)
-
+        print(' '.join(command))
         subprocess.call(' '.join(command), shell=True)
 
         shutil.rmtree(temp)
