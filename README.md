@@ -15,10 +15,17 @@ A video tutorial is available [here](https://www.youtube.com/watch?v=xbroTg3UN7A
   - UBUNTU: open a terminal and type:
     sudo apt-get install gifsicle imagemagick
 
-##About
+##Usage
 
-Render Function:
-This addon tells blender to render the animation as PNG files. Imagemagick is used to convert the PNG files to GIF files. Gifsicle is used to combine the GIF files into a single animated GIF. 
+###FPS to 10
+![FPS 10](http://i.imgur.com/Nfyh3xb.gif)
 
-Import Function:
-Gifsicle splits the animated GIF into separate GIF files. Imagemagick is used to convert the GIF files into PNG. Blender imports the image sequence into the sequencer.
+The scene fps is set to 10 and speed modifiers are added to selected videos so that playback speed and length match the scene frame rate.
+
+###Render GIF
+
+Set an output location. Click the "Render GIF" button. Images will be rendered from blender, converted to GIF files, and combined into an animated gif.
+
+###Import GIF
+
+Click the import GIF button and navigate to the gif file you would like to import. The gif will be split into individual .gifs, then each converted to PNG. Finally, these will be added to the sequence editor as an image sequence. Currently, this function does not handle some gifs very well.
