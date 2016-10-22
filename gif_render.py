@@ -31,6 +31,8 @@ class UI(bpy.types.Panel):
         box.label('GIF Tools')
         box.prop_menu_enum(context.scene, 'gif_quality', 
             text='GIF Quality', icon='SCRIPTWIN')
+        box.prop(context.scene, 'gif_looped',
+            text='Loop GIF')
         row = box.row()
         split=row.split(percentage=0.5)
         colL = split.column()
@@ -72,7 +74,7 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         path = self.filepath.replace('\\','/')
         split = path.split('/')
         name = split.pop()
-        name = os.path.splitext(name)[0]
+        name = removeBads(os.path.splitext(name)[0])
         temp = '/'.join(split) + '/' + name + '_frames'
         
         try:
@@ -235,7 +237,9 @@ class RenderGIF(bpy.types.Operator):
             gifsicle = 'gifsicle'
         
         command = [gifsicle,'--careful', '--optimize=3', '--disposal' ,
-            'background','--no-background','--loop','--no-warnings']
+            'background','--no-background','--no-warnings']
+        if scene.gif_looped:
+            command.append('--loop')
             
         fps = scene.render.fps/scene.render.fps_base
         delay = str(int(100/fps))
@@ -254,7 +258,6 @@ class RenderGIF(bpy.types.Operator):
         command.append(pics)
         command.append('--output')
         command.append(out)
-        print(' '.join(command))
         subprocess.call(' '.join(command), shell=True)
 
         shutil.rmtree(temp)
@@ -342,6 +345,26 @@ def adjust_speed_factors(scene, target_fps, sequence):
             speed_factor = fps/target_fps
             strip.speed_factor = speed_factor
 
+def removeBads(string):
+    """Removes symbols that I don't want in filenames"""
+    string = string.replace('\\','')
+    string = string.replace('/','')
+    string = string.replace(':','')
+    string = string.replace('*','')
+    string = string.replace('?','')
+    string = string.replace('"','')
+    string = string.replace('<','')
+    string = string.replace('>','')
+    string = string.replace('|','')
+    string = string.replace('\n','')
+    string = string.replace('(','')
+    string = string.replace(')','')
+    text = ''
+    for i in range(len(string)):
+        if ord(string[i]) < 128:
+            text = text + string[i]
+    return text
+
 def adjust_strip_lengths(scene, target_fps, sequence):
     """
     Change the scene fps to target_fps
@@ -410,6 +433,10 @@ def register():
     
     bpy.types.Scene.gif_quality = bpy.props.EnumProperty(
         items=gif_quality_options)
+    bpy.types.Scene.gif_looped = bpy.props.BoolProperty(
+        name="Enable or Disable",
+        description="A simple bool property",
+        default = True)
     
 def unregister():
     bpy.utils.unregister_class(UI)
