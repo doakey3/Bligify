@@ -24,8 +24,8 @@ The scene fps is set to 10 and speed modifiers are added to selected videos so t
 
 ###Render GIF
 
-Set an output location. Click the "Render GIF" button. Images will be rendered from blender, converted to GIF files, and combined into an animated gif.
+Set an output location. Click the Render button. Images will be rendered from blender, converted to GIF files, and combined into an animated gif.
 
 ###Import GIF
 
-Click the import GIF button and navigate to the gif file you would like to import. The gif will be split into individual .gifs, then each converted to PNG. Finally, these will be added to the sequence editor as an image sequence. Currently, this function does not handle some gifs very well.
+Click the import button and navigate to the gif file you would like to import. The gif will be split into individual .gifs, then each converted to PNG. Finally, these will be added to the sequence editor as an image sequence.
