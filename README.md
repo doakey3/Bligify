@@ -1,6 +1,7 @@
 #bligify
 
 A Blender 3d addon for exporting and importing animated GIF sequences.
+The user interface is found on the right side of the video sequence editor.
 
 ![UI](http://i.imgur.com/V5SOzNe.png)
 
