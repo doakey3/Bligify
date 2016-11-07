@@ -17,7 +17,7 @@ from .rendergif import RenderGIF
 class gif_UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
-    bl_label = "Bliggify"
+    bl_label = "Bligify"
     
     def draw(self, context):
         layout = self.layout
