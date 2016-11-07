@@ -1,16 +1,16 @@
 import bpy
 
-class FPSToTen(bpy.types.Operator):
-    bl_label = 'FPS: 10'
-    bl_idname = 'sequencerextra.fps_to_ten'
-    bl_description = ''.join(['Adjusts the scene FPS to 10.\n',
+class FPSAdjust(bpy.types.Operator):
+    bl_label = 'FPS Adjust'
+    bl_idname = 'sequencerextra.fps_adjust'
+    bl_description = ''.join(['Adjusts the scene FPS',
                         'Applies speed effect to selected video clips'])
     
     def execute(self, context):
         scene = context.scene
         sequence = scene.sequence_editor
         fps = scene.render.fps/scene.render.fps_base
-        target_fps = 10
+        target_fps = scene.fps_adjustment
 
         strips = selected_video_strips()
         

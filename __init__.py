@@ -10,7 +10,7 @@ bl_info = {
     "category": "Sequencer"}
     
 import bpy
-from .fpstoten import FPSToTen
+from .fpsadjust import FPSAdjust
 from .importgif import ImportGIF
 from .rendergif import RenderGIF
 
@@ -27,8 +27,9 @@ class gif_UI(bpy.types.Panel):
         box.prop(context.scene, 'gif_looped',
             text='Loop GIF')
         row = box.row()
-        row.operator("sequencerextra.fps_to_ten", 
+        row.operator("sequencerextra.fps_adjust", 
             icon="RECOVER_LAST")
+        row.prop(context.scene, 'fps_adjustment',text="")
         row = box.row()
         row.operator('sequencerextra.render_gif',
             icon="RENDER_ANIMATION")
@@ -44,12 +45,18 @@ def initprop():
         ('64','64','Limit number of colors to 64')]
     
     bpy.types.Scene.gif_quality = bpy.props.EnumProperty(
-        items=gif_quality_options)
+        items=gif_quality_options,
+        description = "Number of colors used in final GIF")
         
     bpy.types.Scene.gif_looped = bpy.props.BoolProperty(
         name="Enable or Disable",
         description="Make the GIF Looped",
         default = True)
+    
+    bpy.types.Scene.fps_adjustment = bpy.props.IntProperty(
+        description = "Set the new FPS that will be used",
+        default = 10,
+        min=1)
 
 def register():
     bpy.utils.register_module(__name__)
