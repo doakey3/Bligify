@@ -30,9 +30,10 @@ You can set whether or not the output GIF will be looped.
 
 ###FPS Adjustment
 
-Set the scene fps to the new value.
+Sets the scene fps to the new value.
 This function will also add speed modifiers so that the clips
-play at the same speed. 
+play at the same speed. To use this, first select all the strips that
+will be part of the animated GIF and click the FPS Adjust button. 
 
 ###Render GIF
 
