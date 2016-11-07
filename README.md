@@ -4,7 +4,7 @@ A Blender 3d addon for exporting and importing animated GIF sequences.
 
 ##Installation
 
-<img src="http://i.imgur.com/lAkMmW6.gif" width="640" height="480">
+<img src="http://i.imgur.com/p6ZJsG5.gif" width="640" height="480">
 
 1. Download the repository. 
 2. Open Blender. 
