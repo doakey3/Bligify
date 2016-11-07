@@ -2,7 +2,7 @@
 
 A Blender 3d addon for exporting and importing animated GIF sequences.
 
-![UI](http://i.imgur.com/AEFnBMk.png)
+![UI](http://i.imgur.com/V5SOzNe.png)
 
 ##Installation
 
