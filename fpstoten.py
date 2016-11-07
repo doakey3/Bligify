@@ -17,10 +17,9 @@ class FPSToTen(bpy.types.Operator):
         if len(strips) == 0:
             scene.render.fps = target_fps
             scene.render.fps_base = 1
-            return {'FINISHED'}  
+            return {'FINISHED'}
 
-        apply_speed_modifiers(strips, scene, sequence)
-        adjust_speed_factors(scene, target_fps, sequence)
+        apply_speed_modifiers(strips, scene, target_fps, sequence)
         adjust_strip_lengths(scene, target_fps, sequence)
 
         return {'FINISHED'}
@@ -29,15 +28,20 @@ def selected_video_strips():
     """Gets the selected video strips and returns them as sorted list"""
     sel = list(bpy.context.selected_editable_sequences)
     selected = []
+    movie_types = ['IMAGE','META','SCENE','MOVIE',
+                   'MOVIECLIP','MASK','COLOR']
     for clip in sel:
-        if clip.type == 'MOVIE' or clip.type == 'SCENE':
+        if clip.type in movie_types:
             selected.append(clip)
     selected = list(sorted(selected,
         key=lambda x: x.frame_start))
     return selected
     
-def apply_speed_modifiers(strips, scene, sequence):
+def apply_speed_modifiers(strips, scene, target_fps, sequence):
     """Applies speed modifier to sequence strips"""
+    fps = scene.render.fps/scene.render.fps_base
+    speed_factor = fps/target_fps
+    
     for strip in strips:
         bpy.ops.sequencer.select_all(action='DESELECT')
         sequence.active_strip = strip
@@ -51,35 +55,60 @@ def apply_speed_modifiers(strips, scene, sequence):
             'screen':screen,
             'region':area.regions[0]},
             type="SPEED")
-
-def adjust_speed_factors(scene, target_fps, sequence):
-    """
-    Adjusts the speed factor of each speed modifier to 
-    current_fps/target_fps
-    """
-    fps = scene.render.fps/scene.render.fps_base
-    for strip in sequence.sequences:
-        if strip.type == 'SPEED':
-            movie_strip = strip.input_1
-            strip.use_default_fade = False
-            speed_factor = fps/target_fps
-            strip.speed_factor = speed_factor
-
+        name = sequence.active_strip.name
+        name = 'bligify_' + name
+        
+        speed = sequence.active_strip
+        speed.name = name
+        speed.use_default_fade = False
+        speed.speed_factor = speed_factor
+        
 def adjust_strip_lengths(scene, target_fps, sequence):
     """
     Change the scene fps to target_fps
     Divide the duration of each movie strip by its speed factor
     Set the scene end frame to the last frame of the last selected strip
     """
-    movie_strips = []
-    all_strips = list(sorted(sequence.sequences,
-        key=lambda x: x.frame_start))
-    channels = {}
-    for strip in all_strips:
-        channels[strip.name] = strip.channel
+    bpy.ops.sequencer.select_all(action='DESELECT')
     
     scene.render.fps = target_fps
     scene.render.fps_base = 1
+    
+    moveables = movie_types = ['IMAGE','META','SCENE','MOVIE',
+                               'MOVIECLIP','MASK','COLOR','SOUND']
+    
+    #Deal with preexisting speed modifiers
+    children = []
+    count = 0
+    all_strips = list(sorted(sequence.sequences,
+        key=lambda x: x.frame_start))
+        
+    while count < len(all_strips):
+        if all_strips[count].type == 'SPEED':
+            strip = all_strips[count]
+            if not strip.input_1 in children:
+                children.append(strip.input_1)
+                count += 1
+            else:
+                for other in all_strips:
+                    if other.type == 'SPEED' and not other.name.startswith('bligify_'):
+                        if (other.input_1 == strip.input_1 
+                            and not other == strip):
+                            ssf = strip.speed_factor
+                            osf = other.speed_factor
+                            strip.speed_factor = osf * ssf
+                            other.select = True
+                            bpy.ops.sequencer.delete()
+                            
+        else:
+            count += 1
+        all_strips = list(sorted(sequence.sequences,
+            key=lambda x: x.frame_start))
+                            
+    movie_strips = []
+    channels = {}
+    for strip in all_strips:
+        channels[strip.name] = strip.channel
         
     for strip in all_strips:
         if strip.type == 'SPEED':
@@ -95,9 +124,10 @@ def adjust_strip_lengths(scene, target_fps, sequence):
             
             for st in all_strips:
                 if st.frame_final_start >= original_end:
-                    if st.type == 'MOVIE' or st.type == 'SOUND' or st.type == 'SCENE':
+                    if st.type in moveables:
                         st.frame_start -= difference + (end % 1)
-            
+    
+    #Reposition strips to their original channel        
     for strip in all_strips:
         strip.channel = channels[strip.name]
 
@@ -106,7 +136,6 @@ def adjust_strip_lengths(scene, target_fps, sequence):
     last_frame = movie_strips[-1].frame_final_end - 1
     scene.frame_end = last_frame
     
-    bpy.ops.sequencer.select_all(action='DESELECT')
     sequence.active_strip = movie_strips[0]
 
 def find_sequencer_area():
