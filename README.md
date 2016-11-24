@@ -44,3 +44,7 @@ Click the render GIF button, name the output file, and click ok.
 Click the import button, navigate to the gif file, and click ok.
 The GIF will be converted to a sequence of PNG files and imported
 to the sequencer.
+
+##Video Tutorial
+
+![tutorial(http://i.imgur.com/Smu4ldw.png)](http://i.imgur.com/Smu4ldw.png)
