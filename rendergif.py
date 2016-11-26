@@ -99,7 +99,7 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         if sys.platform == "win32":
             gifsicle_path = os.path.join(os.path.dirname(__file__),
                                          "gifsicle.exe")
-            gifsicle = "'" + gifsicle_path + "'"
+            gifsicle = '"' + gifsicle_path + '"'
         else:
             gifsicle = 'gifsicle'
 
@@ -123,8 +123,8 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         else:
             pass
 
-        pics = "'" + temp + "'*.gif"
-        out = "'" + path + output_name + "'"
+        pics = '"' + temp + '"*.gif'
+        out = '"' + path + output_name + '"'
         command.append(pics)
         command.append("--output")
         command.append(out)

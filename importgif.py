@@ -34,13 +34,13 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         if sys.platform == "win32":
             gisicle_path = os.path.join(os.path.dirname(__file__),
                                         "gifsicle.exe")
-            gifsicle = "'" + gifsicle_path + "'"
+            gifsicle = '"' + gifsicle_path + '"'
 
         else:
             gifsicle = "gifsicle"
         command = " ".join([
-            gifsicle, "--info", "'" + path + "'", ">",
-            "'" + temp + "/info.txt'"
+            gifsicle, "--info", '"' + path + '"', ">",
+            '"' + temp + '/info.txt"'
             ])
 
         subprocess.call(command, shell=True)
@@ -73,8 +73,8 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         scene.render.fps_base = 1
 
         command = " ".join([
-            gifsicle, "--explode", "'" + path + "'",
-            '--output', "'" + temp + "/'"
+            gifsicle, "--explode", '"' + path + '"',
+            '--output', '"' + temp + '/"'
             ])
 
         print("Separating animated GIF into frames...")
@@ -83,7 +83,7 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         if sys.platform == 'win32':
             converter_path = os.path.join(os.path.dirname(__file__),
                                           'convert.exe')
-            converter = "'" + converter_path + "'"
+            converter = '"' + converter_path + '"'
         else:
             converter = "convert"
 
