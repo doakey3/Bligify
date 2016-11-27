@@ -2,6 +2,7 @@ import bpy
 import os
 import sys
 import subprocess
+import shutil
 from .bligify_utils import remove_bads, update_progress
 from bpy_extras.io_utils import ImportHelper
 
@@ -23,7 +24,8 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         split = path.split("/")
         name = split.pop()
         name = remove_bads(os.path.splitext(name)[0])
-        temp = "/".join(split) + "/" + name + "_frames"
+        split.append(name + "_frames")
+        temp = '/'.join(split)
 
         try:
             os.mkdir(temp)
@@ -97,14 +99,15 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
             wm.progress_update((i/total) * 100)
             if i > 0:
                 command = " ".join([
-                    converter, temp + "/" + images[i-1][1::] + ".png",
-                    temp + "/" + images[i], "-layers", "merge",
-                    temp + "/" + images[i][1::] + ".png"
+                    converter,
+                    '"' + temp + "/" + images[i-1][1::] + '.png"',
+                    '"' + temp + "/" + images[i] + '"', "-layers",
+                    "merge", '"' + temp + "/" + images[i][1::] + '.png"'
                     ])
             else:
                 command = " ".join([
-                    converter, temp + "/" + images[i],
-                    temp + "/" + images[i][1::] + ".png"
+                    converter, '"' + temp + "/" + images[i] + '"',
+                    '"' + temp + "/" + images[i][1::] + '.png"'
                     ])
             subprocess.call(command, shell=True)
         update_progress("Converting GIF frames to PNG", 1)
