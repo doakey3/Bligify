@@ -58,7 +58,7 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         scene.render.filepath = temp
         start = scene.frame_start
         end = scene.frame_end
-        for i in range(start, end):
+        for i in range(start, end + 1):
             if sys.platform == "win32":
                 os.system("cls")
             elif sys.platform == "linux":

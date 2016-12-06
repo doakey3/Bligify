@@ -1,19 +1,18 @@
-bl_info = {
-    "name": "bligify",
-    "description": "export/import animated GIF from VSE",
-    "author": "doakey3",
-    "version": (1, 1, 0),
-    "blender": (2, 7, 8),
-    "warning": "Requires imagemagick & gifsicle install on linux",
-    "wiki_url": "https://github.com/doakey3/bligify",
-    "tracker_url": "https://github.com/doakey3/bligify/issues",
-    "category": "Sequencer"}
-
 import bpy
 from .fpsadjust import FPSAdjust
 from .importgif import ImportGIF
 from .rendergif import RenderGIF
 
+bl_info = {
+    "name": "Bligify",
+    "description": "export/import animated GIF from VSE",
+    "author": "doakey3",
+    "version": (1, 1, 1),
+    "blender": (2, 7, 8),
+    "warning": "Requires imagemagick & gifsicle install on linux",
+    "wiki_url": "https://github.com/doakey3/bligify",
+    "tracker_url": "https://github.com/doakey3/bligify/issues",
+    "category": "Sequencer"}
 
 class gif_UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
