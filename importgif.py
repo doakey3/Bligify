@@ -34,7 +34,7 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
             os.mkdir(temp)
 
         if sys.platform == "win32":
-            gisicle_path = os.path.join(os.path.dirname(__file__),
+            gifsicle_path = os.path.join(os.path.dirname(__file__),
                                         "gifsicle.exe")
             gifsicle = '"' + gifsicle_path + '"'
 
