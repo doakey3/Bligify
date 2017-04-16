@@ -1,49 +1,11 @@
 import bpy
 import os
 import sys
+import shutil
 import subprocess
-
-if sys.platform == "win32":
-    sys.path.append(os.path.dirname(__file__))
-from PIL import Image
-from io import BytesIO
 from bpy_extras.io_utils import ExportHelper
 from .bligify_utils import remove_bads, update_progress
 
-class PNGs2GIFs(bpy.types.Operator):
-    """Convert all PNG files in a directory to GIFs"""
-
-    bl_label = "PNGs 2 GIFs"
-    bl_idname = "sequencerextra.pngs2gifs"
-    bl_description = "Convert PNGs to GIFs"
-
-    @classmethod
-    def poll(self, context):
-        scene = context.scene
-        if scene.bligify_frames == "":
-            return False
-        else:
-            return True
-
-    def execute(self, context):
-        scene = context.scene
-        path = bpy.path.abspath(scene.bligify_frames)
-        frames = os.listdir(path)
-        wm = context.window_manager
-        wm.progress_begin(0, 100.0)
-        for i in range(len(frames)):
-            img = Image.open(os.path.join(path, frames[i]))
-            buffer = BytesIO()
-            img.save(buffer, quality=100, format="gif")
-            name = os.path.splitext(frames[i])[0] + '.gif'
-            open(os.path.join(path, name), 'wb').write(buffer.getvalue())
-            img.close()
-            os.remove(os.path.join(path, frames[i]))
-            wm.progress_update((i / len(frames)) * 100)
-            update_progress("Converting PNGs to GIFs", i / len(frames))
-        update_progress("Converting PNGs to GIFs", 1)
-        
-        return {"FINISHED"}
 
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
@@ -54,25 +16,86 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
 
     @classmethod
     def poll(self, context):
-        scene = context.scene
-        if scene.bligify_frames == "":
-            return False
+        scn = context.scene
+        if scn and scn.sequence_editor:
+            return scn.sequence_editor.sequences
         else:
-            return True
+            return False
 
     def execute(self, context):
-
         scene = context.scene
+        scene.render.image_settings.file_format = "PNG"
+        user_filepath = scene.render.filepath
 
-        if sys.platform == "linux":
+        if not sys.platform == "win32":
             try:
                 devnull = open(os.devnull)
+                subprocess.call(["convert"], stdout=devnull,
+                                stderr=devnull)
                 subprocess.call(["gifsicle"], stdout=devnull,
                                 stderr=devnull)
             except FileNotFoundError:
-                print("Gifsicle must be installed...")
+                print("Gifsicle and Imagemagick must be installed...")
                 return {"FINISHED"}
-        
+
+        path = self.filepath.replace("\\", "/")
+        split = path.split("/")
+        output_name = split.pop()
+        path = "/".join(split) + "/"
+        name = os.path.splitext(output_name)[0]
+
+        temp = path + name + "_frames/"
+
+        try:
+            os.mkdir(temp)
+        except FileExistsError:
+            shutil.rmtree(temp)
+            os.mkdir(temp)
+
+        wm = context.window_manager
+        wm.progress_begin(0, 100.0)
+
+        scene.render.filepath = temp
+        start = scene.frame_start
+        end = scene.frame_end
+        for i in range(start, end + 1):
+            if sys.platform == "win32":
+                os.system("cls")
+            elif sys.platform == "linux":
+                subprocess.call("clear", shell=True)
+            progress = (i - start) / (end - start)
+            update_progress("Rendering Frames as PNG", progress)
+            wm.progress_update((progress * 50))
+            scene.frame_start = i
+            scene.frame_end = i
+            bpy.ops.render.render(animation=True)
+        if sys.platform == "win32":
+                os.system("cls")
+        elif sys.platform == "linux":
+            subprocess.call("clear", shell=True)
+        update_progress("Rendering Frames as PNG", 1)
+        scene.frame_start = start
+        scene.frame_end = end
+
+        images = list(sorted(os.listdir(scene.render.filepath)))
+        if sys.platform == "win32":
+            converter = os.path.join(os.path.dirname(__file__),
+                                     "convert.exe")
+        else:
+            converter = "convert"
+
+        total = len(images)
+        for i in range(total):
+            update_progress("Converting PNG to GIF frames", i / total)
+            wm.progress_update(((i / total) * 50) + 50)
+            old = os.path.join(temp, images[i])
+            new_name = os.path.splitext(images[i])[0] + ".gif"
+            new_gif = os.path.join(temp, new_name)
+            command = [converter, old, new_gif]
+            subprocess.call([converter, old, new_gif])
+            os.remove(old)
+        update_progress("Converting PNG to GIF frames", 1)
+
         if sys.platform == "win32":
             gifsicle_path = os.path.join(os.path.dirname(__file__),
                                          "gifsicle.exe")
@@ -100,11 +123,18 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         else:
             pass
 
-        path = bpy.path.abspath(scene.bligify_frames).replace('\\', '/')
-        pics = '"' + path + '"/*.gif'
-        out = '"' + self.filepath + '"'
+        pics = '"' + temp + '"*.gif'
+        out = '"' + path + output_name + '"'
         command.append(pics)
         command.append("--output")
         command.append(out)
+        print("Combining GIF frames into animated GIF...")
         subprocess.call(" ".join(command), shell=True)
+        wm.progress_end()
+
+        shutil.rmtree(temp)
+
+        scene.render.filepath = user_filepath
+
+        print("----------Complete----------")
         return {"FINISHED"}

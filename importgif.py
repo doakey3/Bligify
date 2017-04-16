@@ -6,6 +6,7 @@ import shutil
 from .bligify_utils import remove_bads, update_progress
 from bpy_extras.io_utils import ImportHelper
 
+
 class ImportGIF(bpy.types.Operator, ImportHelper):
     bl_idname = "sequencerextra.import_gif"
     bl_label = "GIF Import"
