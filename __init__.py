@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 1, 2),
+    "version": (1, 2, 0),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -22,10 +22,9 @@ class gif_UI(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         box = layout.box()
-        box.prop_menu_enum(context.scene, "gif_quality",
-                           text="GIF Quality", icon="SCRIPTWIN")
-        box.prop(context.scene, "gif_looped",
-                 text="Loop GIF")
+        row = box.row()
+        row.prop(context.scene, "gif_colors", text="Color")
+        row.prop(context.scene, "gif_looped", text="Loop GIF")
         row = box.row()
         row.operator("sequencerextra.fps_adjust",
                      icon="RECOVER_LAST")
@@ -39,16 +38,11 @@ class gif_UI(bpy.types.Panel):
 
 def initprop():
 
-    gif_quality_options = [
-        ("Full", "Full", "All colors included (bigger filesize)"),
-        ("256", "256", "Limit number of colors to 256"),
-        ("128", "128", "Limit number of colors to 128"),
-        ("64", "64", "Limit number of colors to 64")
-        ]
-
-    bpy.types.Scene.gif_quality = bpy.props.EnumProperty(
-        items=gif_quality_options,
-        description="Number of colors used in final GIF"
+    bpy.types.Scene.gif_colors = bpy.props.IntProperty(
+        description="Number of colors used in the GIF",
+        default=256,
+        max=256,
+        min=2,
         )
 
     bpy.types.Scene.gif_looped = bpy.props.BoolProperty(
@@ -63,7 +57,6 @@ def initprop():
         min=1
         )
 
-
 def register():
     bpy.utils.register_module(__name__)
     initprop()
@@ -72,7 +65,7 @@ def register():
 def unregister():
     bpy.utils.unregister_module(__name__)
 
-    del bpy.types.Scene.gif_quality
+    del bpy.types.Scene.gif_colors
     del bpy.types.Scene.gif_looped
     del bpy.types.Scene.fps_adjustment
 
