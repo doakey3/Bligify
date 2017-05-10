@@ -22,7 +22,7 @@ Usage
 
 The user interface
 
-.. image:: http://i.imgur.com/V5SOzNe.png
+.. image:: http://i.imgur.com/OSImMyz.png
 
 GIF Quality
 -----------
