@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 2, 1),
+    "version": (1, 2, 2),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -44,8 +44,6 @@ class gif_UI(bpy.types.Panel):
         row = box.row()
         row.prop(scene, "gif_colors", text="Colors")
         row.prop(scene, "gif_loop_count", text="Loop")
-        row = layout.row()
-        row.prop(scene, "png_frames_path", text="PNGs")
         row = layout.row()
         row.prop(scene, "delete_frames", text="Cleanup on Completion")
         row = layout.row()
@@ -163,12 +161,6 @@ def initprop():
         min=1
         )
     
-    bpy.types.Scene.png_frames_path = bpy.props.StringProperty(
-        name="PNG Frames Path",
-        description="(Optional)\nPath to a folder of PNG frames",
-        subtype="DIR_PATH",
-    )
-    
     bpy.types.Scene.delete_frames = bpy.props.BoolProperty(
         description="Delete the PNG frames folder after GIF is complete",
         default=True
@@ -187,7 +179,6 @@ def unregister():
     del bpy.types.Scene.gif_color_map
     del bpy.types.Scene.gif_mapfile
     del bpy.types.Scene.gif_careful
-    del bpy.types.Scene.png_frames_path
     del bpy.types.Scene.delete_frames
     del bpy.types.Scene.gif_colors
     del bpy.types.Scene.gif_loop_count

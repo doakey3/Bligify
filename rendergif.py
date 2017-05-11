@@ -96,7 +96,7 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
     bl_idname = "sequencerextra.render_gif"
-    bl_description = "Render an animated GIF.\n\nUses PNG Frames Folder if Given,\nelse renders images from scene"
+    bl_description = "Render an animated GIF."
 
     filename_ext = ".gif"
 
@@ -104,8 +104,6 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
     def poll(self, context):
         scene = context.scene
         if scene and scene.sequence_editor:
-            return True
-        elif not scene.png_frames_path == "":
             return True
         else:
             return False
@@ -132,28 +130,19 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         folder_path = os.path.dirname(abspath)
         file_name = os.path.splitext(ntpath.basename(abspath))[0]
         frames_folder = os.path.join(folder_path, file_name + "_frames/")
+        while os.path.isdir(frames_folder):
+            frames_folder += "_frames/"
+
+        os.mkdir(frames_folder)
         
-        if not scene.png_frames_path == '':
-            scene.render.filepath = bpy.path.abspath(scene.png_frames_path)
-            self.make_gif(context)
-            
-            return {"FINISHED"}
+        wm = context.window_manager
+        wm.modal_handler_add(self)
+        self.timer = wm.event_timer_add(0.5, context.window)
         
-        else:
-            try:
-                os.mkdir(frames_folder)
-            except FileExistsError:
-                shutil.rmtree(frames_folder)
-                os.mkdir(frames_folder)
-            
-            wm = context.window_manager
-            wm.modal_handler_add(self)
-            self.timer = wm.event_timer_add(0.5, context.window)
-            
-            scene.render.filepath = frames_folder
-            bpy.ops.render.render('INVOKE_DEFAULT', animation=True)
-        
-            return {"RUNNING_MODAL"}
+        scene.render.filepath = frames_folder
+        bpy.ops.render.render('INVOKE_DEFAULT', animation=True)
+    
+        return {"RUNNING_MODAL"}
     
     def modal(self, context, event):
         scene = context.scene
