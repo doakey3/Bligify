@@ -22,22 +22,16 @@ Usage
 
 The user interface
 
-.. image:: http://i.imgur.com/OSImMyz.png
+.. image:: http://i.imgur.com/lgQ6OoK.png
+
+.. image:: http://i.imgur.com/O6DxDxo.gif
 
 GIF Quality
 -----------
 
-.. image:: http://i.imgur.com/O6DxDxo.gif
-.. image:: http://i.imgur.com/LpOAB1U.gif
-
-Above shows a comparison between leaving the GIF quality on the default
-setting (full) and limiting the colors to 64. The output size is 1.2 mb
-and 470 kb respectively.
-
-Loop
-----
-
-Uncheck this box if you want the GIF to play through once and stop
+You can adjust the settings to fine-tune the quality of your animated 
+GIF (and it's filesize). For most situations, the default settings 
+should give good results.
 
 FPS Adjustment
 --------------
@@ -49,8 +43,11 @@ frames-per-second setting of the scene.
 Render GIF
 ----------
 
-Click the button, name the output file, and click ok. A progress box
-will appear telling you how much time is left.
+If you have specified a folder where PNG images are stored, Bligify
+will generate an animated GIF from those images.
+
+Else, Blender will render the animation as PNG frames and they will be
+used to create an animated GIF
 
 Import GIF
 ----------
