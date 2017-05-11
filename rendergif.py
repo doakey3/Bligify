@@ -7,42 +7,6 @@ import subprocess
 from bpy_extras.io_utils import ExportHelper
 from .bligify_utils import remove_bads, update_progress
 
-def render_frames(context):
-    """Render frame by frame and report progress"""
-    scene = context.scene
-    
-    wm = context.window_manager
-    wm.progress_begin(0, 100.0)
-    
-    start = scene.frame_start
-    end = scene.frame_end
-    
-    for i in range(start, end + 1):
-        if sys.platform == "win32":
-            os.system("cls")
-        elif sys.platform == "linux":
-            subprocess.call("clear", shell=True)
-            
-        progress = (i - start) / (end - start)
-        update_progress("Rendering Frames as PNG", progress)
-        wm.progress_update((progress * 50))
-        
-        scene.frame_start = i
-        scene.frame_end = i
-        
-        bpy.ops.render.render(animation=True)
-    
-    if sys.platform == "win32":
-        os.system("cls")
-    elif sys.platform == "linux":
-        subprocess.call("clear", shell=True)
-    
-    update_progress("Rendering Frames as PNG", 1)
-    wm.progress_end()
-    
-    scene.frame_start = start
-    scene.frame_end = end
-
 def pngs_2_gifs(context, frames_folder):
     """Convert the PNGs to gif images and report progress"""
     
@@ -60,11 +24,13 @@ def pngs_2_gifs(context, frames_folder):
     
     for i in range(total):
         update_progress("Converting PNG to GIF frames", i / total)
-        wm.progress_update(((i / total) * 50) + 50)
+        wm.progress_update((i / total) * 100)
         png = os.path.join(frames_folder, images[i])
         gif = os.path.splitext(png)[0] + ".gif"
         subprocess.call([converter, '+dither', png, gif])
-        os.remove(png)
+    
+    #wm.progress_update(100)
+    #wm.progress_end()
     update_progress("Converting PNG to GIF frames", 1)
 
 def gifs_2_animated_gif(context, abspath, frames_folder):
@@ -79,23 +45,39 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     else:
         gifsicle = 'gifsicle'
 
-    command = [
-        gifsicle, "--careful", "--optimize=3", "--disposal",
-        "background", "--no-background", "--no-warnings"
-        ]
+    command = [gifsicle, "--no-background", "--disposal"]
+    
+    command.append(scene.gif_disposal)
+    
+    if not scene.gif_dither == "none":
+        command.append('--dither=' + scene.gif_dither)
+    
+    command.append('--color-method=' + scene.gif_color_method)
+    
+    if not scene.gif_color_map == "none":
         
-    if scene.gif_looped:
+        if not scene.gif_color_map == "custom":
+            command.append("--use-colormap=" + scene.gif_color_map)
+        elif not scene.gif_mapfile == '':
+            map_path = ''.join(['"', bpy.path.abspath(scene.gif_mapfile), '"'])
+            command.append("--use-colormap=" + map_path)
+    
+    if scene.gif_careful:
+        command.append('--careful')
+    
+    command.append('--optimize=' + str(scene.gif_optimize))
+        
+    if scene.gif_loop_count == 0:
         command.append("--loop")
+    else:
+        command.append("--loop=" + str(scene.gif_loop_count))
     
     fps = scene.render.fps / scene.render.fps_base
     delay = str(int(100 / fps))
     command.append("--delay")
     command.append(delay)
     
-    colors = str(scene.gif_colors)
-    if not colors == "256":
-        command.append("--colors")
-        command.append(colors)
+    command.append("--colors=" + str(scene.gif_colors))
     
     gifs = ''.join(['"', frames_folder, '/"*.gif'])
     animated_gif = ''.join(['"', abspath, '"'])
@@ -106,25 +88,43 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     
     print("Combining GIF frames into animated GIF...")
     subprocess.call(" ".join(command), shell=True)
+    
+    for file in os.listdir(frames_folder):
+        if file.endswith('.gif'):
+            os.remove(os.path.join(frames_folder, file))
 
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
     bl_idname = "sequencerextra.render_gif"
-    bl_description = "Render an animated GIF"
+    bl_description = "Render an animated GIF.\n\nUses PNG Frames Folder if Given,\nelse renders images from scene"
 
     filename_ext = ".gif"
 
     @classmethod
     def poll(self, context):
-        scn = context.scene
-        if scn and scn.sequence_editor:
-            return scn.sequence_editor.sequences
+        scene = context.scene
+        if scene and scene.sequence_editor:
+            return True
+        elif not scene.png_frames_path == "":
+            return True
         else:
             return False
+    
+    def make_gif(self, context):
+        scene = context.scene
+        frames_folder = scene.render.filepath
+        abspath = os.path.abspath(self.filepath)
+        
+        pngs_2_gifs(context, frames_folder)
+        gifs_2_animated_gif(context, abspath, frames_folder)
+        scene.render.filepath = self.original_filepath
+        
+        if scene.delete_frames:
+            shutil.rmtree(frames_folder)
 
     def execute(self, context):
         scene = context.scene
-        original_filepath = scene.render.filepath
+        self.original_filepath = scene.render.filepath
         
         scene.render.image_settings.file_format = "PNG"
         
@@ -133,23 +133,39 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         file_name = os.path.splitext(ntpath.basename(abspath))[0]
         frames_folder = os.path.join(folder_path, file_name + "_frames/")
         
-        scene.render.filepath = frames_folder
-
-        try:
-            os.mkdir(frames_folder)
-        except FileExistsError:
-            shutil.rmtree(frames_folder)
-            os.mkdir(frames_folder)
+        if not scene.png_frames_path == '':
+            scene.render.filepath = bpy.path.abspath(scene.png_frames_path)
+            self.make_gif(context)
+            
+            return {"FINISHED"}
         
-        scene.render.filepath = frames_folder
+        else:
+            try:
+                os.mkdir(frames_folder)
+            except FileExistsError:
+                shutil.rmtree(frames_folder)
+                os.mkdir(frames_folder)
+            
+            wm = context.window_manager
+            wm.modal_handler_add(self)
+            self.timer = wm.event_timer_add(0.5, context.window)
+            
+            scene.render.filepath = frames_folder
+            bpy.ops.render.render('INVOKE_DEFAULT', animation=True)
         
-        render_frames(context)
-        pngs_2_gifs(context, frames_folder)
-        gifs_2_animated_gif(context, abspath, frames_folder)
+            return {"RUNNING_MODAL"}
+    
+    def modal(self, context, event):
+        scene = context.scene
+        frames_folder = scene.render.filepath
         
-        shutil.rmtree(frames_folder)
-
-        scene.render.filepath = original_filepath
-
-        print("----------Complete----------")
-        return {"FINISHED"}
+        if event.type == 'TIMER':
+            if len(os.listdir(frames_folder)) == scene.frame_end:
+                self.make_gif(context)
+                context.area.type = "SEQUENCE_EDITOR"
+                return {"FINISHED"}
+        
+            else:
+                return {"PASS_THROUGH"}
+                
+        return {"PASS_THROUGH"}

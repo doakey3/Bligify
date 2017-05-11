@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 2, 0),
+    "version": (1, 2, 1),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -20,54 +20,179 @@ class gif_UI(bpy.types.Panel):
     bl_label = "Bligify"
 
     def draw(self, context):
+        scene = context.scene
         layout = self.layout
+        
         box = layout.box()
         row = box.row()
-        row.prop(context.scene, "gif_colors", text="Color")
-        row.prop(context.scene, "gif_looped", text="Loop GIF")
+        row.prop(scene, "gif_disposal", text="Disposal", icon="GHOST")
         row = box.row()
+        row.prop(scene, "gif_dither", text="Dither", icon="HAIR")
+        row = box.row()
+        row.prop(scene, "gif_color_method", text="Filter", icon="FILTER")
+        row = box.row()
+        row.prop(scene, "gif_color_map", text="Map", icon="IMAGE_RGB")
+        special_row = box.row()
+        special_row.prop(scene, "gif_mapfile", text="Map File")
+        if scene.gif_color_map == "custom":
+            special_row.enabled = True
+        else:
+            special_row.enabled = False
+        row = box.row()
+        row.prop(scene, "gif_careful", text="Careful")
+        row.prop(scene, "gif_optimize", text="Optimize")
+        row = box.row()
+        row.prop(scene, "gif_colors", text="Colors")
+        row.prop(scene, "gif_loop_count", text="Loop")
+        row = layout.row()
+        row.prop(scene, "png_frames_path", text="PNGs")
+        row = layout.row()
+        row.prop(scene, "delete_frames", text="Cleanup on Completion")
+        row = layout.row()
         row.operator("sequencerextra.fps_adjust",
                      icon="RECOVER_LAST")
-        row.prop(context.scene, "fps_adjustment", text="")
-        row = box.row()
+        row.prop(scene, "fps_adjustment", text="")
+        row = layout.row()
         row.operator("sequencerextra.render_gif",
                      icon="RENDER_ANIMATION")
         row.operator("sequencerextra.import_gif",
                      icon="LIBRARY_DATA_DIRECT")
 
-
 def initprop():
+    
+    disposal_options = [
+        ("none", "None", "Leave frame visible for future frames to build upon"),
+        ("background", "Background", "Replace the frame with the background"),
+        ("previous", "Previous", "Replace frame with the area from the previous displayed frame"),
+        ]
+    
+    bpy.types.Scene.gif_disposal = bpy.props.EnumProperty(
+        name="Disposal Method",
+        items=disposal_options,
+        description="Set the disposal method",
+        default="background"
+        )
+    
+    dither_methods = [
+        ("none", "None", "Dithering makes bigger files that are usually better appearing,\nbut can cause animation artifacts, so it is off by default"),
+        ("floyd-steinberg", "Floyd-Steinberg", "Use Floyd-Steinberg diffusion, usually best, but may cause artifacts"),
+        ("ro64", "ro64", "Use large, random looking pattern that generally produces good results"),
+        ("o3", "o3", "Use smaller, regular pattern"),
+        ("o4", "o4", "Use smaller, regular pattern"),
+        ("o8", "o8", "Use smaller, regular pattern"),
+        ("ordered", "Ordered", "A good ordered dithering algorithm"),
+        ("halftone", "Halftone", "For special effects"),
+        ("squarehalftone", "Square Halftone", "For special effects"),
+        ("diagnoal", "Diagnoal", "For special effects")
+        ]
+    
+    bpy.types.Scene.gif_dither = bpy.props.EnumProperty(
+        name="Dither Method",
+        items=dither_methods,
+        description="Set the dithering method",
+        default="none"
+        )
+    
+    color_methods = [
+        ("diversity", "Diversity", "Use a strict subset of existing colors.\nGenerally produces good results"),
+        ("blend-diversity", "Blend Diversity", "Some color values are blended from groups of existing colors."),
+        ("median-cut", "Median Cut", "The median cut algorithm as described by Heckbert"),
+    ]
+    
+    bpy.types.Scene.gif_color_method = bpy.props.EnumProperty(
+        name="Color Reduction Method",
+        items=color_methods,
+        description="Determine how a smaller colormap is chosen",
+        default="diversity"
+        )
+    
+    color_maps = [
+        ("none", "None", "Don't use a color map"),
+        ("web", "Web", 'Use the 216-color "Web-safe palette"'),
+        ("gray", "Grayscale", "Use grayscale color map"),
+        ("bw", "Black & White", "Use Black and White color map"),
+        ("custom", "Custom", "Use a custom color map")
+    ]
+    
+    bpy.types.Scene.gif_color_map = bpy.props.EnumProperty(
+        name="Color Map",
+        items=color_maps,
+        description="Use a color map so that each pixel in the image is\nchanged to the closest match in colormap.\n\n(See Gifsicle's Manual Page for more info)",
+        default="none",
+        )
+    
+    bpy.types.Scene.gif_mapfile = bpy.props.StringProperty(
+        name="Map File",
+        description="Path to the custom color map",
+        subtype="FILE_PATH",
+        )
+    
+    bpy.types.Scene.gif_careful = bpy.props.BoolProperty(
+        name="Careful",
+        description="Create a slightly larger GIF, but avoid bugs with some Java and Internet Explorer versions",
+        default=True
+        )
+    
+    bpy.types.Scene.gif_optimize = bpy.props.IntProperty(
+        name="Optimization Method",
+        description="Optimization Method\n\n1 store only changed portion of each image (fast)\n2 use transparency to shrink the file further\n3 try several methods (slower, but smaller file)",
+        default=3,
+        max=3,
+        min=1,
+        )
 
     bpy.types.Scene.gif_colors = bpy.props.IntProperty(
+        name="GIF Colors",
         description="Number of colors used in the GIF",
         default=256,
         max=256,
         min=2,
         )
 
-    bpy.types.Scene.gif_looped = bpy.props.BoolProperty(
-        name="Enable or Disable",
-        description="Make the GIF Looped",
-        default=True
+    bpy.types.Scene.gif_loop_count = bpy.props.IntProperty(
+        name="Loop Count",
+        description="Loop x number of times; 0 = loop forever",
+        default=0,
+        min=0
         )
 
     bpy.types.Scene.fps_adjustment = bpy.props.IntProperty(
-        description="Set the new FPS that will be used",
+        name="FPS Adjustment",
+        description="Set the new FPS that will be used after running FPS Adjust",
         default=10,
         min=1
         )
+    
+    bpy.types.Scene.png_frames_path = bpy.props.StringProperty(
+        name="PNG Frames Path",
+        description="(Optional)\nPath to a folder of PNG frames",
+        subtype="DIR_PATH",
+    )
+    
+    bpy.types.Scene.delete_frames = bpy.props.BoolProperty(
+        description="Delete the PNG frames folder after GIF is complete",
+        default=True
+    )
 
 def register():
     bpy.utils.register_module(__name__)
     initprop()
 
-
 def unregister():
     bpy.utils.unregister_module(__name__)
-
+    
+    del bpy.types.Scene.gif_dither
+    del bpy.types.Scene.gif_disposal
+    del bpy.types.Scene.gif_color_method
+    del bpy.types.Scene.gif_color_map
+    del bpy.types.Scene.gif_mapfile
+    del bpy.types.Scene.gif_careful
+    del bpy.types.Scene.png_frames_path
+    del bpy.types.Scene.delete_frames
     del bpy.types.Scene.gif_colors
-    del bpy.types.Scene.gif_looped
+    del bpy.types.Scene.gif_loop_count
     del bpy.types.Scene.fps_adjustment
+    
 
 if __name__ == "__main__":
     register()

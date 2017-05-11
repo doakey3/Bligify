@@ -68,7 +68,7 @@ def animated_gif_2_gifs(context, abspath, frames_folder):
     
     gif = ''.join(['"', abspath, '"'])
     frames = ''.join(['"', frames_folder, '/"'])
-    command = ' '.join([gifsicle, "--explode", gif, '--output', frames])
+    command = ' '.join([gifsicle, '--unoptimize', '--explode', gif, '--output', frames])
     
     print("Separating animated GIF into frames...")
     subprocess.call(command, shell=True)
@@ -101,16 +101,8 @@ def gifs_2_pngs(context, frames_folder):
         out_name = images[i][1::] + '.png'
         out_img = os.path.join(frames_folder, out_name)
         out_img = ''.join(['"', out_img, '"'])
-        
-        if i > 0:
-            prev_name = images[i-1][1::] + '.png'
-            prev_img = os.path.join(frames_folder, prev_name)
-            prev_img = ''.join(['"', prev_img, '"'])
-            
-            command = ' '.join([converter, prev_img, curr_img, 
-                                '-layers', 'merge', out_img])
-        else:
-            command = ' '.join([converter, curr_img, out_img])
+
+        command = ' '.join([converter, curr_img, out_img])
             
         subprocess.call(command, shell=True)
     
