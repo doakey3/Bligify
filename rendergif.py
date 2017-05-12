@@ -27,7 +27,14 @@ def pngs_2_gifs(context, frames_folder):
         wm.progress_update((i / total) * 100)
         png = os.path.join(frames_folder, images[i])
         gif = os.path.splitext(png)[0] + ".gif"
-        subprocess.call([converter, '+dither', png, gif])
+        command = [converter]
+        if context.scene.gif_dither_conversion:
+            command.append("+dither")
+        
+        command.append(png)
+        command.append(gif)
+            
+        subprocess.call(command)
     
     #wm.progress_update(100)
     #wm.progress_end()
@@ -77,8 +84,7 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     command.append("--delay")
     command.append(delay)
     
-    if scene.gif_colors < 256:
-        command.append("--colors=" + str(scene.gif_colors))
+    command.append("--colors=" + str(scene.gif_colors))
     
     gifs = ''.join(['"', frames_folder, '/"*.gif'])
     animated_gif = ''.join(['"', abspath, '"'])

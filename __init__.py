@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 2, 3),
+    "version": (1, 2, 4),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -44,6 +44,8 @@ class gif_UI(bpy.types.Panel):
         row = box.row()
         row.prop(scene, "gif_colors", text="Colors")
         row.prop(scene, "gif_loop_count", text="Loop")
+        row = layout.row()
+        row.prop(scene, "gif_dither_conversion", text="Dither Conversion")
         row = layout.row()
         row.prop(scene, "delete_frames", text="Cleanup on Completion")
         row = layout.row()
@@ -161,6 +163,11 @@ def initprop():
         min=1
         )
     
+    bpy.types.Scene.gif_dither_conversion = bpy.props.BoolProperty(
+        description="Add dither to PNGs as they are converted to GIFs\n\nMay or may not make your animated GIF look better.",
+        default=False
+    )
+    
     bpy.types.Scene.delete_frames = bpy.props.BoolProperty(
         description="Delete the PNG frames folder after GIF is complete",
         default=True
@@ -179,6 +186,7 @@ def unregister():
     del bpy.types.Scene.gif_color_map
     del bpy.types.Scene.gif_mapfile
     del bpy.types.Scene.gif_careful
+    del bpy.types.Scene.gif_dither_conversion
     del bpy.types.Scene.delete_frames
     del bpy.types.Scene.gif_colors
     del bpy.types.Scene.gif_loop_count
