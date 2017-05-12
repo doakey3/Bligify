@@ -52,7 +52,7 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     else:
         gifsicle = 'gifsicle'
 
-    command = [gifsicle, "--no-background", "--no-warnings", "--disposal"]
+    command = [gifsicle, "--no-background", "--disposal"]
     
     command.append(scene.gif_disposal)
     
@@ -158,12 +158,16 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         frames_folder = scene.render.filepath
         
         if event.type == 'TIMER':
-            if len(os.listdir(frames_folder)) == scene.frame_end:
-                self.make_gif(context)
-                context.area.type = "SEQUENCE_EDITOR"
+            try:
+                if len(os.listdir(frames_folder)) == scene.frame_end:
+                    self.make_gif(context)
+                    context.area.type = "SEQUENCE_EDITOR"
+                    return {"FINISHED"}
+            
+                else:
+                    return {"PASS_THROUGH"}
+            except FileNotFoundError:
                 return {"FINISHED"}
         
-            else:
-                return {"PASS_THROUGH"}
-                
-        return {"PASS_THROUGH"}
+        else:
+            return {"PASS_THROUGH"}

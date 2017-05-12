@@ -1,70 +1,78 @@
 .. contents::
 
-Tutorial Video
-==============
-
-.. image:: http://i.imgur.com/v1rGCHn.png
-    :target: https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
-
-
 Installation
 ============
 
-1. Download the repository. 
-2. Open Blender. 
-3. Go to File > User Preferences > Addons
-4. Click "Install From File" and navigate to the downloaded release
-5. Check the box next to "Sequencer:bligify"
-6. If using linux, you must install gifsicle and imagemagick.
+Download the repository.
+
+.. image:: http://i.imgur.com/nNUZ5QB.gif
+
+Install the addon
+
+1. Open Blender.
+2. Go to File > User Preferences > Addons
+3. Click "Install From File" and navigate to the downloaded release
+4. Check the box next to "Sequencer:bligify"
+
+.. image: http://i.imgur.com/zMGuk5Y.gif
+
+Note: If using linux, you must install gifsicle and imagemagick.
 
 Usage
 =====
 
-The user interface
+A `Tutorial Video`_ is available for an early version of the addon.
 
-.. image:: http://i.imgur.com/lgQ6OoK.png
-
-.. image:: http://i.imgur.com/O6DxDxo.gif
+_Tutorial Video:
+https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
 
 GIF Quality
 -----------
 
-You can adjust the settings to fine-tune the quality of your animated 
-GIF (and it's filesize). For most situations, the default settings 
-should give good results.
+.. image:: http://i.imgur.com/LEpKMXP.png
+
+You can adjust the settings to fine-tune the quality of your animated
+GIF (and it's filesize). For most situations, the default settings
+should give good results. You can learn more about each of the settings
+by hovering your mouse over them or by reading the `Gifsicle Manpage`_
+
+_Gifsicle Manpage: https://www.lcdf.org/gifsicle/man.html
 
 FPS Adjustment
 --------------
 
-Sets the scene FPS to the value in the integer property window. It also
-applies a speed modifier to the selected clips to adjust for the slower
-frames-per-second setting of the scene.
+High frame rates will make output filesize much larger. You can easily
+adjust a video's frame rate with the FPS adjust tool. It changes the
+scene FPS value and adds a speed modifier to selected clips to maintain
+playback speed.
+
+.. image:: http://i.imgur.com/tepItIL.gif
 
 Render GIF
 ----------
 
-If you have specified a folder where PNG images are stored, Bligify
-will generate an animated GIF from those images.
+Render the animation to PNG files. Convert those PNGs to GIFs. Finally,
+convert the GIFs to an animated GIF.
 
-Else, Blender will render the animation as PNG frames and they will be
-used to create an animated GIF
+.. image:: http://i.imgur.com/GaGezm6.gif
 
 Import GIF
 ----------
 
-Click the button, find the file to import, and click ok. The GIf will be
-imported as an image sequence.
+Separate an animated GIF into it's frames. Convert those GIFs to PNGs
+and import the PNGs into the sequencer.
+
+.. image:: http://i.imgur.com/pOg9lts.gif
 
 How it Works
 ============
 
-Inside the addon, there are 2 executables, namely: convert.exe and
-gifsicle.exe. When the render button is clicked, blender will render a
-PNG image sequence, then convert.exe (from imagemagick) will convert
-the PNGs to GIF files. Finally, gifsicle.exe will merge all the GIF
-files into a single animated GIF. This process occurs in reverse when
-a GIF is imported.
+Inside the addon, there are 2 executables, namely: convert.exe (from
+ImageMagick) and gifsicle.exe. The addon is really just a front-end for
+these two programs.
 
-If you're using linux, then you must install gifsicle and imagemagick
-on your system for this addon to work. 
+If you're using linux, then you must install gifsicle and imagemagick on
+your system for this addon to work.
 
+
+.. image:: http://i.imgur.com/O6DxDxo.gif
