@@ -61,7 +61,7 @@ Import GIF
 Separate an animated GIF into it's frames. Convert those GIFs to PNGs
 and import the PNGs into the sequencer.
 
-.. image:: http://i.imgur.com/IiAUUh1.gif
+.. image:: http://i.imgur.com/lhjCOCG.gif
 
 How it Works
 ============
