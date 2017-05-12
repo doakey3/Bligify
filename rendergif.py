@@ -45,7 +45,7 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     else:
         gifsicle = 'gifsicle'
 
-    command = [gifsicle, "--no-background", "--disposal"]
+    command = [gifsicle, "--no-background", "--no-warnings", "--disposal"]
     
     command.append(scene.gif_disposal)
     
@@ -77,7 +77,8 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     command.append("--delay")
     command.append(delay)
     
-    command.append("--colors=" + str(scene.gif_colors))
+    if scene.gif_colors < 256:
+        command.append("--colors=" + str(scene.gif_colors))
     
     gifs = ''.join(['"', frames_folder, '/"*.gif'])
     animated_gif = ''.join(['"', abspath, '"'])
@@ -129,9 +130,11 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         abspath = os.path.abspath(self.filepath)
         folder_path = os.path.dirname(abspath)
         file_name = os.path.splitext(ntpath.basename(abspath))[0]
-        frames_folder = os.path.join(folder_path, file_name + "_frames/")
+        frames_folder = os.path.join(folder_path, file_name + "_frames")
         while os.path.isdir(frames_folder):
-            frames_folder += "_frames/"
+            frames_folder += "_frames"
+        
+        frames_folder += '/'
 
         os.mkdir(frames_folder)
         
