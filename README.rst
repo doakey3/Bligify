@@ -23,8 +23,7 @@ Usage
 
 A `Tutorial Video`_ is available for an early version of the addon.
 
-_Tutorial Video:
-https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
+.. _Tutorial Video: https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
 
 GIF Quality
 -----------
@@ -36,7 +35,7 @@ GIF (and it's filesize). For most situations, the default settings
 should give good results. You can learn more about each of the settings
 by hovering your mouse over them or by reading the `Gifsicle Manpage`_
 
-_Gifsicle Manpage: https://www.lcdf.org/gifsicle/man.html
+.. _Gifsicle Manpage: https://www.lcdf.org/gifsicle/man.html
 
 FPS Adjustment
 --------------
