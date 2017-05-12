@@ -18,7 +18,8 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
     
     if sys.platform == "win32":
         addon_folder = os.path.dirname(__file__)
-        gifsicle_path = os.path.join(addon_folder, "gifsicle.exe")
+        gifsicle_path = os.path.join(
+            addon_folder, "executables", "gifsicle.exe")
         gifsicle = ''.join(['"', gifsicle_path, '"'])
     else:
         gifsicle = 'gifsicle'
