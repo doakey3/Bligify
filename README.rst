@@ -11,10 +11,10 @@ Install the addon
 
 1. Open Blender.
 2. Go to File > User Preferences > Addons
-3. Click "Install From File" and navigate to the downloaded release
+3. Click "Install From File" and navigate to the downloaded zip file
 4. Check the box next to "Sequencer:bligify"
 
-.. image: http://i.imgur.com/QXvwNad.gif
+.. image:: http://i.imgur.com/QXvwNad.gif
 
 Note: If using linux, you must install gifsicle and imagemagick.
 
