@@ -53,7 +53,7 @@ Render GIF
 Render the animation to PNG files. Convert those PNGs to GIFs. Finally,
 convert the GIFs to an animated GIF.
 
-.. image:: http://i.imgur.com/GaGezm6.gif
+.. image:: http://i.imgur.com/pvydLO8.gif
 
 Import GIF
 ----------
