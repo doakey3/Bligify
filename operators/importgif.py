@@ -4,7 +4,8 @@ import ntpath
 import sys
 import subprocess
 import shutil
-from .bligify_utils import remove_bads, update_progress
+from .utilities.remove_bads import remove_bads
+from .utilities.update_progress import update_progress
 from bpy_extras.io_utils import ImportHelper
 
 def adjust_scene_for_gif(context, abspath, frames_folder):
@@ -61,14 +62,16 @@ def animated_gif_2_gifs(context, abspath, frames_folder):
     
     if sys.platform == "win32":
         addon_folder = os.path.dirname(__file__)
-        gifsicle_path = os.path.join(addon_folder, "gifsicle.exe")
+        gifsicle_path = os.path.join(
+            addon_folder, "executables", "gifsicle.exe")
         gifsicle = ''.join(['"', gifsicle_path, '"'])
     else:
         gifsicle = 'gifsicle'
     
     gif = ''.join(['"', abspath, '"'])
     frames = ''.join(['"', frames_folder, '/"'])
-    command = ' '.join([gifsicle, '--unoptimize', '--explode', gif, '--output', frames])
+    command = ' '.join([gifsicle, '--unoptimize', '--explode', 
+                        gif, '--output', frames])
     
     print("Separating animated GIF into frames...")
     subprocess.call(command, shell=True)
@@ -81,7 +84,8 @@ def gifs_2_pngs(context, frames_folder):
     
     if sys.platform == 'win32':
         addon_folder = os.path.dirname(__file__)
-        converter_path = os.path.join(addon_folder, 'convert.exe')
+        converter_path = os.path.join(
+            addon_folder, 'executables', 'convert.exe')
         converter = ''.join(['"', converter_path, '"'])
     else:
         converter = "convert"

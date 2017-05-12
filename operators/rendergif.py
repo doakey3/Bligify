@@ -5,7 +5,8 @@ import sys
 import shutil
 import subprocess
 from bpy_extras.io_utils import ExportHelper
-from .bligify_utils import remove_bads, update_progress
+from .utilities.remove_bads import remove_bads
+from .utilities.update_progress import update_progress
 
 def pngs_2_gifs(context, frames_folder):
     """Convert the PNGs to gif images and report progress"""
@@ -18,7 +19,8 @@ def pngs_2_gifs(context, frames_folder):
     
     if sys.platform == "win32":
         addon_folder = os.path.dirname(__file__)
-        converter = os.path.join(addon_folder, "convert.exe")
+        converter = os.path.join(
+            addon_folder, 'executables', 'convert.exe')
     else:
         converter = "convert"
     
@@ -36,8 +38,6 @@ def pngs_2_gifs(context, frames_folder):
             
         subprocess.call(command)
     
-    #wm.progress_update(100)
-    #wm.progress_end()
     update_progress("Converting PNG to GIF frames", 1)
 
 def gifs_2_animated_gif(context, abspath, frames_folder):
@@ -47,7 +47,8 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     
     if sys.platform == "win32":
         addon_folder = os.path.dirname(__file__)
-        gifsicle_path = os.path.join(addon_folder, "gifsicle.exe")
+        gifsicle_path = os.path.join(
+            addon_folder, 'executables', 'gifsicle.exe')
         gifsicle = ''.join(['"', gifsicle_path, '"'])
     else:
         gifsicle = 'gifsicle'
@@ -99,6 +100,8 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     for file in os.listdir(frames_folder):
         if file.endswith('.gif'):
             os.remove(os.path.join(frames_folder, file))
+    
+    context.window_manager.progress_end()
 
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"

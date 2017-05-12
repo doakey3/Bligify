@@ -1,13 +1,13 @@
 import bpy
-from .fpsadjust import FPSAdjust
-from .importgif import ImportGIF
-from .rendergif import RenderGIF
+from .operators.fpsadjust import FPSAdjust
+from .operators.importgif import ImportGIF
+from .operators.rendergif import RenderGIF
 
 bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 2, 5),
+    "version": (1, 2, 6),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",

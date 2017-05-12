@@ -12,11 +12,14 @@ Install the addon
 1. Open Blender.
 2. Go to File > User Preferences > Addons
 3. Click "Install From File" and navigate to the downloaded zip file
-4. Check the box next to "Sequencer:bligify"
+4. Check the box next to "Sequencer:Bligify"
+5. Save user settings
+
+The addon interface is on the right side of the sequencer
 
 .. image:: http://i.imgur.com/QXvwNad.gif
 
-Note: If using linux, you must install gifsicle and imagemagick.
+Note: If using Linux, you must install Gifsicle and ImageMagick.
 
 Usage
 =====
@@ -69,9 +72,5 @@ How it Works
 Inside the addon, there are 2 executables, namely: convert.exe (from
 ImageMagick) and gifsicle.exe. The addon is really just a front-end for
 these two programs.
-
-If you're using linux, then you must install gifsicle and imagemagick on
-your system for this addon to work.
-
 
 .. image:: http://i.imgur.com/O6DxDxo.gif
