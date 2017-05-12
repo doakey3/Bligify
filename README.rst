@@ -5,7 +5,7 @@ Installation
 
 Download the repository.
 
-.. image:: http://i.imgur.com/nNUZ5QB.gif
+.. image:: http://i.imgur.com/NvrcI8I.gif
 
 Install the addon
 
@@ -14,7 +14,7 @@ Install the addon
 3. Click "Install From File" and navigate to the downloaded release
 4. Check the box next to "Sequencer:bligify"
 
-.. image: http://i.imgur.com/zMGuk5Y.gif
+.. image: http://i.imgur.com/QXvwNad.gif
 
 Note: If using linux, you must install gifsicle and imagemagick.
 
@@ -45,7 +45,7 @@ adjust a video's frame rate with the FPS adjust tool. It changes the
 scene FPS value and adds a speed modifier to selected clips to maintain
 playback speed.
 
-.. image:: http://i.imgur.com/tepItIL.gif
+.. image:: http://i.imgur.com/njWvf7S.gif
 
 Render GIF
 ----------
@@ -61,7 +61,7 @@ Import GIF
 Separate an animated GIF into it's frames. Convert those GIFs to PNGs
 and import the PNGs into the sequencer.
 
-.. image:: http://i.imgur.com/pOg9lts.gif
+.. image:: http://i.imgur.com/IiAUUh1.gif
 
 How it Works
 ============
