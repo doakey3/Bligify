@@ -27,7 +27,7 @@ class gif_UI(bpy.types.Panel):
         row = box.row()
         row.prop(scene, "gif_disposal", text="Disposal", icon="GHOST")
         row = box.row()
-        row.prop(scene, "gif_dither", text="Dither", icon="HAIR")
+        row.prop(scene, "gif_dither", text="Dither", icon="GROUP_VERTEX")
         row = box.row()
         row.prop(scene, "gif_color_method", text="Filter", icon="FILTER")
         row = box.row()
