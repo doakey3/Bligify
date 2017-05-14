@@ -11,27 +11,38 @@ class FPSAdjust(bpy.types.Operator):
         scene = context.scene
         fps = scene.render.fps / scene.render.fps_base
         target_fps = scene.fps_adjustment
+        speed_factor = fps / target_fps
         
         if fps == target_fps:
-            scene.render.fps_base = 1
             return {"FINISHED"}
 
         strips = list(bpy.context.selected_editable_sequences)
         strips = list(sorted(strips, key=lambda x: x.frame_start))
 
+        set_scene_fps(scene, target_fps)
+
         if len(strips) == 0:
-            scene.render.fps = target_fps
-            scene.render.fps_base = 1
             return {"FINISHED"}
 
-        message = apply_speed_modifiers(scene, strips, target_fps)
+        message = apply_speed_modifiers(scene, strips, fps, speed_factor)
         if not message == None:
             self.report(set({'ERROR'}), message)
             return {"FINISHED"}
 
         return {"FINISHED"}
 
-def apply_speed_modifiers(scene, strips, target_fps):
+def set_scene_fps(scene, target_fps):
+    """Sets the scene fps"""
+    
+    if target_fps <= 120:
+        scene.render.fps = target_fps
+        scene.render.fps_base = 1
+    
+    else:
+        scene.render.fps = 100
+        scene.render.fps_base = 100 / target_fps
+
+def apply_speed_modifiers(scene, strips, fps, speed_factor):
     """
     Applies speed modifier to strips and 
     shortens them according to target fps
@@ -43,12 +54,6 @@ def apply_speed_modifiers(scene, strips, target_fps):
     for strip in strips:
         if not is_independent(all_strips, strip):
             return "FPS Adjust should only be done to independent strips\nEither prerender the timeline section or make a metastrip before applying FPS Adjust."
-    
-    fps = scene.render.fps / scene.render.fps_base
-    speed_factor = fps / target_fps
-    
-    scene.render.fps = target_fps
-    scene.render.fps_base = 1
     
     for strip in strips:
 

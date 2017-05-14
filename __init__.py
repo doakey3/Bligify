@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE",
     "author": "doakey3",
-    "version": (1, 2, 6),
+    "version": (1, 2, 7),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle install on linux",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -160,6 +160,7 @@ def initprop():
         name="FPS Adjustment",
         description="Set the new FPS that will be used after running FPS Adjust",
         default=10,
+        max=1000,
         min=1
         )
     
