@@ -77,8 +77,10 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
         
     if scene.gif_loop_count == 0:
         command.append("--loop")
+    elif scene.gif_loop_count == 1:
+        command.append("--no-loopcount")
     else:
-        command.append("--loop=" + str(scene.gif_loop_count))
+        command.append("--loopcount=" + str(scene.gif_loop_count - 1))
     
     fps = scene.render.fps / scene.render.fps_base
     delay = str(int(100 / fps))
