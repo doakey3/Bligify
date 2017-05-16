@@ -164,7 +164,8 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
         
         if event.type == 'TIMER':
             try:
-                if len(os.listdir(frames_folder)) == scene.frame_end:
+                frame_count = scene.frame_end - scene.frame_start + 1
+                if len(os.listdir(frames_folder)) == frame_count:
                     self.make_gif(context)
                     context.area.type = "SEQUENCE_EDITOR"
                     return {"FINISHED"}
