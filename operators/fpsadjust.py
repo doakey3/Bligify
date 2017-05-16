@@ -80,7 +80,7 @@ def apply_speed_modifiers(scene, strips, fps, speed_factor):
         
         shift_afters(all_strips, end, shift_difference)
     
-    scene.frame_start = strips[0].frame_start
+    scene.frame_start = strips[0].frame_final_start
     scene.frame_end = strips[-1].frame_final_end - 1
 
 def is_independent(all_strips, strip):
