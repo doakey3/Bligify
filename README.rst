@@ -28,6 +28,8 @@ The addon interface is on the right side of the sequencer
 
 Note: If using Linux, you must install Gifsicle and ImageMagick.
 
+Currently, the addon does not work on Mac.
+
 Usage
 =====
 

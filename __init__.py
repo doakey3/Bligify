@@ -5,7 +5,7 @@ from .operators.rendergif import RenderGIF
 
 bl_info = {
     "name": "Bligify",
-    "description": "export/import animated GIF from VSE",
+    "description": "export/import animated GIF from VSE. Currently runs on Windows and Linux only.",
     "author": "doakey3",
     "version": (1, 2, 9),
     "blender": (2, 7, 8),
