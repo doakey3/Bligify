@@ -59,6 +59,11 @@ playback speed.
 
 .. image:: http://i.imgur.com/njWvf7S.gif
 
+I recommend you try setting the Dither to "Floyd-Stienberg" and checking
+the box that says "Dither Conversion". These 2 properties typically make
+good quality GIFs that are also small. They can cause artifacts, so they
+are not enabled by default.
+
 Render GIF
 ----------
 

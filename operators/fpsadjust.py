@@ -1,5 +1,6 @@
 import bpy
 import math
+from .utilities.get_open_channel import get_open_channel
 
 class FPSAdjust(bpy.types.Operator):
 
@@ -19,15 +20,28 @@ class FPSAdjust(bpy.types.Operator):
         strips = list(bpy.context.selected_editable_sequences)
         strips = list(sorted(strips, key=lambda x: x.frame_start))
 
-        set_scene_fps(scene, target_fps)
+        i = 0
+        while i < len(strips):
+            if strips[i].type == 'SOUND':
+                strips.pop(i)
+            else:
+                i += 1
 
         if len(strips) == 0:
             return {"FINISHED"}
+            
+        all_strips = list(sorted(scene.sequence_editor.sequences,
+        key=lambda x: x.frame_start))
+    
+        for unchecked_strip in all_strips:
+            if not is_independent(all_strips, unchecked_strip):
+                message = "FPS Adjust should only be done to independent strips\n(No strips stacked on other strips)\n\nEither prerender the timeline section or make a metastrip before applying FPS Adjust."
+                self.report(set({'ERROR'}), message)
+                return {"FINISHED"}
+        
+        set_scene_fps(scene, target_fps)
 
-        message = apply_speed_modifiers(scene, strips, fps, speed_factor)
-        if not message == None:
-            self.report(set({'ERROR'}), message)
-            return {"FINISHED"}
+        apply_speed_modifiers(scene, strips, fps, speed_factor)  
 
         return {"FINISHED"}
 
@@ -51,16 +65,14 @@ def apply_speed_modifiers(scene, strips, fps, speed_factor):
     all_strips = list(sorted(scene.sequence_editor.sequences,
         key=lambda x: x.frame_start))
     
-    for strip in strips:
-        if not is_independent(all_strips, strip):
-            return "FPS Adjust should only be done to independent strips\nEither prerender the timeline section or make a metastrip before applying FPS Adjust."
+    speed_channel = get_open_channel(scene)
     
     for strip in strips:
 
         speed_strip = scene.sequence_editor.sequences.new_effect(
             name="Bligify_" + strip.name,
             type="SPEED",
-            channel=strip.channel + 1,
+            channel=speed_channel,
             frame_start=strip.frame_final_start,
             frame_end=strip.frame_final_end,
             seq1=strip
@@ -90,19 +102,23 @@ def is_independent(all_strips, strip):
     Speed modifiers should only be added to independent strips
     """
     
+    if strip.type == 'SOUND':
+        return True
+    
     for potential_relative in all_strips:
-        if not potential_relative == strip:
-            start = strip.frame_start
-            end = strip.frame_final_end
-            p_start = potential_relative.frame_start
-            p_end = potential_relative.frame_final_end
-            
-            if p_start >= start and p_start < end:
-                return False
-            elif p_end > start and p_end <= end:
-                return False
-            elif p_start == start and p_end == end:
-                return False
+        if not potential_relative.type == 'SOUND':
+            if not potential_relative == strip:
+                start = strip.frame_start
+                end = strip.frame_final_end
+                p_start = potential_relative.frame_start
+                p_end = potential_relative.frame_final_end
+                
+                if p_start >= start and p_start < end:
+                    return False
+                elif p_end > start and p_end <= end:
+                    return False
+                elif p_start == start and p_end == end:
+                    return False
     return True
 
 def shift_afters(all_strips, frame, shift_count):
