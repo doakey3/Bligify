@@ -33,7 +33,7 @@ class FPSAdjust(bpy.types.Operator):
         all_strips = list(sorted(scene.sequence_editor.sequences,
         key=lambda x: x.frame_start))
     
-        for unchecked_strip in all_strips:
+        for unchecked_strip in strips:
             if not is_independent(all_strips, unchecked_strip):
                 message = "FPS Adjust should only be done to independent strips\n(No strips stacked on other strips)\n\nEither prerender the timeline section or make a metastrip before applying FPS Adjust."
                 self.report(set({'ERROR'}), message)
@@ -81,16 +81,11 @@ def apply_speed_modifiers(scene, strips, fps, speed_factor):
         speed_strip.speed_factor = speed_factor
 
         duration = strip.frame_final_duration
-        end = strip.frame_final_end
+        new_duration = math.ceil(duration / speed_factor)        
+        strip.frame_final_end = strip.frame_final_start + new_duration
+        shift_difference = duration - strip.frame_final_duration
         
-        new_duration = math.ceil(duration / speed_factor)
-        new_end = strip.frame_final_start + new_duration
-        difference = end - new_end
-        shift_difference = difference + (end % 1)
-        
-        strip.frame_final_end = new_end
-        
-        shift_afters(all_strips, end, shift_difference)
+        shift_afters(all_strips, strip.frame_final_end, shift_difference)
     
     scene.frame_start = strips[0].frame_final_start
     scene.frame_end = strips[-1].frame_final_end - 1
@@ -101,19 +96,21 @@ def is_independent(all_strips, strip):
     
     Speed modifiers should only be added to independent strips
     """
-    
     if strip.type == 'SOUND':
         return True
+    
+    start = strip.frame_final_start
+    end = strip.frame_final_end
     
     for potential_relative in all_strips:
         if not potential_relative.type == 'SOUND':
             if not potential_relative == strip:
-                start = strip.frame_start
-                end = strip.frame_final_end
-                p_start = potential_relative.frame_start
-                p_end = potential_relative.frame_final_end
                 
+                p_start = potential_relative.frame_final_start
+                p_end = potential_relative.frame_final_end
+
                 if p_start >= start and p_start < end:
+                    print(p_start, start, p_end, end)
                     return False
                 elif p_end > start and p_end <= end:
                     return False
