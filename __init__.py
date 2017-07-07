@@ -2,6 +2,7 @@ import bpy
 from .operators.fpsadjust import FPSAdjust
 from .operators.importgif import ImportGIF
 from .operators.rendergif import RenderGIF
+from .operators.export_odp import ExportODP
 
 bl_info = {
     "name": "Bligify",
@@ -57,6 +58,34 @@ class gif_UI(bpy.types.Panel):
                      icon="RENDER_ANIMATION")
         row.operator("sequencerextra.import_gif",
                      icon="LIBRARY_DATA_DIRECT")
+
+class ODP_UI(bpy.types.Panel):
+    bl_space_type = "SEQUENCE_EDITOR"
+    bl_region_type = "UI"
+    bl_label = "Bligify to ODP"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    def draw(self, context):
+        scene = context.scene
+        layout = self.layout
+        
+        box = layout.box()
+        row = box.row()
+        row.prop(scene, "odp_aspect_ratio", text="Aspect")
+        row = box.row()
+        row.prop(scene, "odp_offset_left", text="Offset Left")
+        row = box.row()
+        row.prop(scene, "odp_offset_right", text="Offset Right")
+        row = box.row()
+        row.prop(scene, "odp_offset_top", text="Offset Top")
+        row = box.row()
+        row.prop(scene, "odp_offset_bottom", text="Offset Bottom")
+        row = box.row()
+        row.prop(scene, "odp_border_thickness", text="Border")
+        row.prop(scene, "odp_border_color", text="")
+        row = layout.row()
+        row.operator("sequencerextra.export_odp", text="Render ODP", icon="RENDER_RESULT")
+    
 
 def initprop():
     
@@ -173,6 +202,59 @@ def initprop():
         description="Delete the PNG frames folder after GIF is complete",
         default=True
     )
+    
+    aspect_ratios = [
+        ("4:3", "4:3", "28cm wide by 21cm height"),
+        ("16:9", "16:9", "28cm wide by 15.75cm height"),
+    ]
+    
+    bpy.types.Scene.odp_aspect_ratio = bpy.props.EnumProperty(
+        name="ODP Aspect Ratio",
+        items=aspect_ratios,
+        description="The aspect ratio that will be used in the slideshow",
+        default="4:3"
+    )
+    
+    bpy.types.Scene.odp_offset_left = bpy.props.FloatProperty(
+        name="ODP Offset Left",
+        description="Offset the GIF from the left by x centimeters",
+        default=1.0,
+    )
+    
+    bpy.types.Scene.odp_offset_right = bpy.props.FloatProperty(
+        name="ODP Offset Right",
+        description="Offset the GIF from the right by x centimeters",
+        default=1.0,
+    )
+    
+    bpy.types.Scene.odp_offset_top = bpy.props.FloatProperty(
+        name="ODP Offset Top",
+        description="Offset the GIF from the top by x centimeters",
+        default=1.0
+    )
+    
+    bpy.types.Scene.odp_offset_bottom = bpy.props.FloatProperty(
+        name="ODP Offset Bottom",
+        description="Offset the GIF from the bottom by x centimeters",
+        default=1.0
+    )
+    
+    bpy.types.Scene.odp_border_thickness = bpy.props.IntProperty(
+        name="ODP Border Thickness",
+        default=3,
+        description="Thickness of the border around the animated GIF",
+        min=0,
+    )
+    
+    bpy.types.Scene.odp_border_color = bpy.props.FloatVectorProperty(  
+       subtype='COLOR_GAMMA',
+       description="Border color around the animated GIF",
+       size=3,
+       default=(0.2, 0.2, 0.2),
+       min=0.0, 
+       max=1.0,
+    )
+        
 
 def register():
     bpy.utils.register_module(__name__)

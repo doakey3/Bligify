@@ -80,6 +80,23 @@ and import the PNGs into the sequencer.
 
 .. image:: http://i.imgur.com/lhjCOCG.gif
 
+Bligify to ODP
+==============
+
+Making unlooped GIFs work right in slideshow presentations can be 
+difficult. While you might expect an unlooped GIF to play, then stop
+on the last frame--the way it does in an internet browser--this is not
+the behavior of GIFs inside PowerPoint or LibreOffice Impress. Instead,
+GIFs will play, then stop on the first frame of the animation.
+
+This problem is overcome by making the first frame of the animated GIF
+invisible, then hiding a still image of the first and last frames of the 
+animation underneath the GIF. This part of the Bligify addon will set 
+this up for you.
+
+Set the loop count to 1, adjust the offset, aspect ratio, and border
+thickness as desired and click the Render ODP button.
+
 How it Works
 ============
 

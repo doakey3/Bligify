@@ -7,6 +7,7 @@ import subprocess
 from bpy_extras.io_utils import ExportHelper
 from .utilities.remove_bads import remove_bads
 from .utilities.update_progress import update_progress
+from .utilities.png import from_array
 
 def pngs_2_gifs(context, frames_folder):
     """Convert the PNGs to gif images and report progress"""
@@ -99,18 +100,41 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     print("Combining GIF frames into animated GIF...")
     subprocess.call(" ".join(command), shell=True)
     
-    for file in os.listdir(frames_folder):
-        if file.endswith('.gif'):
-            os.remove(os.path.join(frames_folder, file))
+    #for file in os.listdir(frames_folder):
+    #    if file.endswith('.gif'):
+    #        os.remove(os.path.join(frames_folder, file))
     
     context.window_manager.progress_end()
+
+def make_empty_png(scene, filepath):
+    """
+    create a png matching the size of the scene resolution where
+    each pixel has an alpha of 0
+    """
+    res_x = scene.render.resolution_x
+    res_y = scene.render.resolution_y
+    
+    color_array = []
+    for r in range(0, res_y):
+        color_array.append([])
+        for c in range(0, res_x):
+            color_array[-1].append([0, 0])
+    
+    img = from_array(color_array, 'LA')
+    img.save(filepath)
+    
 
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
     bl_idname = "sequencerextra.render_gif"
     bl_description = "Render an animated GIF."
-
+    
     filename_ext = ".gif"
+    
+    blank_first_frame = bpy.props.BoolProperty(
+        description="When true, the first frame of the GIF will be replaced by empty space",
+        default=False
+    )
 
     @classmethod
     def poll(self, context):
@@ -166,6 +190,34 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
             try:
                 frame_count = scene.frame_end - scene.frame_start + 1
                 if len(os.listdir(frames_folder)) == frame_count:
+                    
+                    if self.blank_first_frame:
+                        first_frame_name = sorted(os.listdir(frames_folder))[0]
+                        png = os.path.join(
+                            frames_folder, first_frame_name)
+                        abspath = os.path.abspath(self.filepath)
+                        folder_path = os.path.dirname(abspath)
+                        gif = os.path.join(folder_path, 'first_frame.gif')
+                            
+                        
+                        if sys.platform == "win32":
+                            addon_folder = os.path.dirname(__file__)
+                            converter = os.path.join(
+                                addon_folder, 'executables', 'convert.exe')
+                        else:
+                            converter = "convert"
+                            
+                        command = [converter]
+                        if context.scene.gif_dither_conversion:
+                            command.append("+dither")
+                        
+                        command.append(png)
+                        command.append(gif)
+
+                        subprocess.call(command)
+                        
+                        make_empty_png(scene, png)
+                    
                     self.make_gif(context)
                     context.area.type = "SEQUENCE_EDITOR"
                     return {"FINISHED"}
