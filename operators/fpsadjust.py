@@ -7,6 +7,14 @@ class FPSAdjust(bpy.types.Operator):
     bl_label = "FPS Adjust"
     bl_idname = "sequencerextra.fps_adjust"
     bl_description = "Applies speed to strips and adjusts scene FPS"
+    
+    @classmethod
+    def poll(self, context):
+        scene = context.scene
+        if scene and scene.sequence_editor:
+            return True
+        else:
+            return False
 
     def execute(self, context):
         scene = context.scene
