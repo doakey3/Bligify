@@ -35,6 +35,7 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
     info_file.close()
     os.remove(info_path)
     
+    fps = 10
     delay = -1
     x = -1
     y = -1

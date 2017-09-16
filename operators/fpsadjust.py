@@ -39,7 +39,7 @@ class FPSAdjust(bpy.types.Operator):
             return {"FINISHED"}
             
         all_strips = list(sorted(scene.sequence_editor.sequences,
-        key=lambda x: x.frame_start))
+            key=lambda x: x.frame_start))
     
         for unchecked_strip in strips:
             if not is_independent(all_strips, unchecked_strip):
