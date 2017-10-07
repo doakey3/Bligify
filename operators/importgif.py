@@ -125,6 +125,8 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
     bl_label = "GIF Import"
     bl_description = "Import animated GIF as an image sequence"
 
+    adjust_scene_for_gif_prop = bpy.props.BoolProperty(name="Adjust Scene For GIF", default=True)
+    
     filter_glob = bpy.props.StringProperty(
             default="*.gif",
             options={"HIDDEN"},
@@ -145,7 +147,8 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
             shutil.rmtree(frames_folder)
             os.mkdir(frames_folder)
 
-        adjust_scene_for_gif(context, abspath, frames_folder)
+        if self.adjust_scene_for_gif_prop == True:
+            adjust_scene_for_gif(context, abspath, frames_folder)
         animated_gif_2_gifs(context, abspath, frames_folder)
         gifs_2_pngs(context, frames_folder)
 
