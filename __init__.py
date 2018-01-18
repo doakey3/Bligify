@@ -19,6 +19,11 @@ class gif_UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_label = "Bligify"
+    bl_category = "Tools"
+    
+    @classmethod
+    def poll(cls, context):
+        return context.space_data.view_type == 'SEQUENCER'
 
     def draw(self, context):
         scene = context.scene
@@ -64,6 +69,11 @@ class ODP_UI(bpy.types.Panel):
     bl_region_type = "UI"
     bl_label = "Bligify to ODP"
     bl_options = {"DEFAULT_CLOSED"}
+    bl_category = "Tools"
+    
+    @classmethod
+    def poll(cls, context):
+        return context.space_data.view_type == 'SEQUENCER'
 
     def draw(self, context):
         scene = context.scene
