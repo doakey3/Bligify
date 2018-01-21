@@ -19,6 +19,7 @@ class gif_UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_label = "Bligify"
+    bl_options = {"DEFAULT_CLOSED"}
     bl_category = "Tools"
     
     @classmethod
