@@ -19,7 +19,7 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
     gif = ''.join(['"', abspath, '"'])
     info_path = os.path.join(frames_folder, 'info.txt')
     info = ''.join(['"', info_path, '"'])
-    command = ' '.join(["gifsicle", '--info', gif, '>', info])
+    command = ' '.join(['gifsicle', '--info', gif, '>', info])
     subprocess.call(command, shell=True)
 
     info_file = open(info_path, 'r')
@@ -86,7 +86,7 @@ def gifs_2_pngs(context, frames_folder):
         out_img = os.path.join(frames_folder, out_name)
         out_img = ''.join(['"', out_img, '"'])
 
-        command = ' '.join(['convert', curr_img, out_img])
+        command = ' '.join(['magick', curr_img, out_img])
 
         subprocess.call(command, shell=True)
 

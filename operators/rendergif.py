@@ -1,6 +1,5 @@
 import bpy
 import os
-import ntpath
 import sys
 import shutil
 import subprocess
@@ -24,7 +23,7 @@ def pngs_2_gifs(context, frames_folder):
         wm.progress_update((i / total) * 100)
         png = os.path.join(frames_folder, images[i])
         gif = os.path.splitext(png)[0] + ".gif"
-        command = ["convert"]
+        command = ['magick']
         if context.scene.gif_dither_conversion:
             command.append("+dither")
 
@@ -148,7 +147,7 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
 
         abspath = os.path.abspath(self.filepath)
         folder_path = os.path.dirname(abspath)
-        file_name = os.path.splitext(ntpath.basename(abspath))[0]
+        file_name = os.path.splitext(os.path.basename(abspath))[0]
         frames_folder = os.path.join(folder_path, file_name + "_frames")
         while os.path.isdir(frames_folder):
             frames_folder += "_frames"
@@ -183,7 +182,7 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
                         folder_path = os.path.dirname(abspath)
                         gif = os.path.join(folder_path, 'first_frame.gif')
 
-                        command = ["convert"]
+                        command = ['magick']
 
                         if context.scene.gif_dither_conversion:
                             command.append("+dither")
