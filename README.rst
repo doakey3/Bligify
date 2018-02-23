@@ -4,7 +4,7 @@
 =======
 Bligify
 =======
-
+.. image:: http://i.imgur.com/O6DxDxo.gif
 .. contents::
 
 Installation
@@ -26,9 +26,50 @@ The addon interface is on the right side of the sequencer
 
 .. image:: http://i.imgur.com/QXvwNad.gif
 
-Note: If using Linux, you must install Gifsicle and ImageMagick.
+If you have a video loaded into the VSE, you'll find Bligify in the
+"Tools Tab."
 
-Currently, the addon does not work on Mac.
+Dependencies
+------------
+Bligify requires ImageMagick_ and Gifsicle_ to work.
+
+Windows
+~~~~~~~
+For ImageMagick_, use the installer provided on their downloads page.
+
+For Gifsicle, download the executable and add the path to the folder
+containing the executable to your system's PATH environment variable.
+
+Alternatively, you can download the `old 1.3.4 release`_ of Bligify
+which had these executables packaged as part of the addon.
+
+.. _old 1.3.4 release: https://github.com/doakey3/Bligify/releases/tag/1.3.4
+
+MAC
+~~~
+You can install both ImageMagick and Gifsicle using Homebrew_
+
+.. _Homebrew: https://brew.sh/
+
+To install Homebrew, open a terminal and paste this command into the
+terminal and press enter:
+
+    `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+
+To install ImageMagick, enter this into the terminal
+
+    `brew install ImageMagick`
+
+To install Gifsicle, enter this into the terminal
+
+    `brew install gifsicle`
+
+Linux
+~~~~~
+Installation of Gifsicle and ImageMagick is dependent on your system.
+Using Arch Linux, installation is like this:
+
+    `sudo pacman -S gifsicle imagemagick`
 
 Usage
 =====
@@ -82,26 +123,9 @@ and import the PNGs into the sequencer.
 
 Bligify to ODP
 ==============
+The older version of the addon had a feature which allowed users to
+export addons to a Libreoffice Impress presentation. This feature will
+be moved to a separate addon.
 
-Making unlooped GIFs work right in slideshow presentations can be 
-difficult. While you might expect an unlooped GIF to play, then stop
-on the last frame--the way it does in an internet browser--this is not
-the behavior of GIFs inside PowerPoint or LibreOffice Impress. Instead,
-GIFs will play, then stop on the first frame of the animation.
-
-This problem is overcome by making the first frame of the animated GIF
-invisible, then hiding a still image of the first and last frames of the 
-animation underneath the GIF. This part of the Bligify addon will set 
-this up for you.
-
-Set the loop count to 1, adjust the offset, aspect ratio, and border
-thickness as desired and click the Render ODP button.
-
-How it Works
-============
-
-Inside the addon, there are 2 executables, namely: convert.exe (from
-ImageMagick) and gifsicle.exe. The addon is really just a front-end for
-these two programs.
-
-.. image:: http://i.imgur.com/O6DxDxo.gif
+.. _ImageMagick: https://www.imagemagick.org/script/index.php
+.. _Gifsicle: https://www.lcdf.org/gifsicle/

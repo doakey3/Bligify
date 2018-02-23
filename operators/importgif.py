@@ -1,6 +1,5 @@
 import bpy
 import os
-import ntpath
 import sys
 import subprocess
 import shutil
@@ -8,33 +7,26 @@ from .utilities.remove_bads import remove_bads
 from .utilities.update_progress import update_progress
 from bpy_extras.io_utils import ImportHelper
 
+
 def adjust_scene_for_gif(context, abspath, frames_folder):
     """
-    Get the frame rate and resolution of the animated gif 
+    Get the frame rate and resolution of the animated gif
     and adjust scene fps and resolution accordingly.
     """
-    
+
     scene = context.scene
-    
-    if sys.platform == "win32":
-        addon_folder = os.path.dirname(__file__)
-        gifsicle_path = os.path.join(
-            addon_folder, "executables", "gifsicle.exe")
-        gifsicle = ''.join(['"', gifsicle_path, '"'])
-    else:
-        gifsicle = 'gifsicle'
-    
+
     gif = ''.join(['"', abspath, '"'])
     info_path = os.path.join(frames_folder, 'info.txt')
     info = ''.join(['"', info_path, '"'])
-    command = ' '.join([gifsicle, '--info', gif, '>', info])
+    command = ' '.join(["gifsicle", '--info', gif, '>', info])
     subprocess.call(command, shell=True)
-    
+
     info_file = open(info_path, 'r')
     lines = info_file.readlines()
     info_file.close()
     os.remove(info_path)
-    
+
     fps = 10
     delay = -1
     x = -1
@@ -58,60 +50,46 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
     scene.render.fps = fps
     scene.render.fps_base = 1
 
+
 def animated_gif_2_gifs(context, abspath, frames_folder):
     """Separate the animated gif into frames"""
     scene = context.scene
-    
-    if sys.platform == "win32":
-        addon_folder = os.path.dirname(__file__)
-        gifsicle_path = os.path.join(
-            addon_folder, "executables", "gifsicle.exe")
-        gifsicle = ''.join(['"', gifsicle_path, '"'])
-    else:
-        gifsicle = 'gifsicle'
-    
+
     gif = ''.join(['"', abspath, '"'])
     frames = ''.join(['"', frames_folder, '/"'])
-    command = ' '.join([gifsicle, '--unoptimize', '--explode', 
+    command = ' '.join(['gifsicle', '--unoptimize', '--explode',
                         gif, '--output', frames])
-    
+
     print("Separating animated GIF into frames...")
     subprocess.call(command, shell=True)
+
 
 def gifs_2_pngs(context, frames_folder):
     """
     Convert gif frames to PNGs.
     Each frame must be combined with the previous frame
     """
-    
-    if sys.platform == 'win32':
-        addon_folder = os.path.dirname(__file__)
-        converter_path = os.path.join(
-            addon_folder, 'executables', 'convert.exe')
-        converter = ''.join(['"', converter_path, '"'])
-    else:
-        converter = "convert"
-    
+
     images = list(sorted(os.listdir(frames_folder)))
-    
+
     wm = context.window_manager
     wm.progress_begin(0, 100.0)
     total = len(images)
     for i in range(total):
         update_progress("Converting GIF frames to PNG", i/total)
         wm.progress_update((i/total) * 100)
-        
+
         curr_img = os.path.join(frames_folder, images[i])
         curr_img = ''.join(['"', curr_img, '"'])
-        
+
         out_name = images[i][1::] + '.png'
         out_img = os.path.join(frames_folder, out_name)
         out_img = ''.join(['"', out_img, '"'])
 
-        command = ' '.join([converter, curr_img, out_img])
-            
+        command = ' '.join(['convert', curr_img, out_img])
+
         subprocess.call(command, shell=True)
-    
+
     update_progress("Converting GIF frames to PNG", 1)
     wm.progress_end()
 
@@ -120,25 +98,27 @@ def gifs_2_pngs(context, frames_folder):
         if not images[i].endswith(".png"):
             os.remove(os.path.join(frames_folder, images[i]))
 
+
 class ImportGIF(bpy.types.Operator, ImportHelper):
-    bl_idname = "sequencerextra.import_gif"
+    bl_idname = "bligify.import_gif"
     bl_label = "GIF Import"
     bl_description = "Import animated GIF as an image sequence"
 
-    adjust_scene_for_gif_prop = bpy.props.BoolProperty(name="Adjust Scene For GIF", default=True)
-    
+    adjust_scene_for_gif_prop = bpy.props.BoolProperty(
+        name="Adjust Scene For GIF", default=True)
+
     filter_glob = bpy.props.StringProperty(
-            default="*.gif",
-            options={"HIDDEN"},
-            maxlen=255,
-            )
+        default="*.gif",
+        options={"HIDDEN"},
+        maxlen=255,
+        )
 
     def execute(self, context):
         scene = context.scene
-        
+
         abspath = os.path.abspath(self.filepath)
         folder_path = os.path.dirname(abspath)
-        file_name = os.path.splitext(ntpath.basename(abspath))[0]
+        file_name = os.path.splitext(os.path.basename(abspath))[0]
         frames_folder = os.path.join(folder_path, file_name + "_frames/")
 
         try:
@@ -147,7 +127,7 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
             shutil.rmtree(frames_folder)
             os.mkdir(frames_folder)
 
-        if self.adjust_scene_for_gif_prop == True:
+        if self.adjust_scene_for_gif_prop:
             adjust_scene_for_gif(context, abspath, frames_folder)
         animated_gif_2_gifs(context, abspath, frames_folder)
         gifs_2_pngs(context, frames_folder)
@@ -164,5 +144,5 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
             frame_start=current_frame
             )
 
-        print("----------Strip added to VSE----------")
+        print(os.path.basename(abspath) + " added to VSE")
         return {"FINISHED"}
