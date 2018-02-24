@@ -64,6 +64,12 @@ To install Gifsicle, enter this into the terminal
 
     `brew install gifsicle`
 
+**Note:** For now, On Mac, you must open Blender from the terminal for
+this addon to work. If you know how to fix this, please let me know. See
+`this Blender stack exchange question`_
+
+.. _this Blender stack exchange question: https://blender.stackexchange.com/questions/101639/addon-only-works-on-mac-if-blender-started-from-terminal
+
 Linux
 ~~~~~
 Installation of Gifsicle and ImageMagick is dependent on your system.

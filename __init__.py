@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE.",
     "author": "doakey3",
-    "version": (1, 3, 4),
+    "version": (1, 3, 5),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle",
     "wiki_url": "https://github.com/doakey3/bligify",
