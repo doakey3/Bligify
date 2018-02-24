@@ -45,7 +45,7 @@ which had these executables packaged as part of the addon.
 
 .. _old 1.3.4 release: https://github.com/doakey3/Bligify/releases/tag/1.3.4
 
-MAC
+Mac
 ~~~
 You can install both ImageMagick and Gifsicle using Homebrew_
 
@@ -73,9 +73,11 @@ this addon to work. If you know how to fix this, please let me know. See
 Linux
 ~~~~~
 Installation of Gifsicle and ImageMagick is dependent on your system.
-Using Arch Linux, installation is like this:
 
-    `sudo pacman -S gifsicle imagemagick`
+If you're using Arch linux, this addon is available on the Arch User
+Repository as blender-plugin-bligify_
+
+.. _blender-plugin-bligify: https://aur.archlinux.org/packages/blender-plugin-bligify/
 
 Usage
 =====
