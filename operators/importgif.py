@@ -5,6 +5,8 @@ import subprocess
 import shutil
 from .utilities.remove_bads import remove_bads
 from .utilities.update_progress import update_progress
+from .utilities.is_gifsicle_installed import is_gifsicle_installed
+from .utilities.is_magick_installed import is_magick_installed
 from bpy_extras.io_utils import ImportHelper
 
 
@@ -114,6 +116,17 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         )
 
     def execute(self, context):
+        gifsicle_installed = is_gifsicle_installed()
+        print(gifsicle_installed)
+        if not gifsicle_installed:
+            self.report({'ERROR'}, "Gifsicle must be installed for this to work.")
+            return {"FINISHED"}
+
+        magick_installed = is_magick_installed()
+        if not magick_installed:
+            self.report({'ERROR'}, "Imagemagick must be installed for this to work.")
+            return {"FINISHED"}
+
         scene = context.scene
 
         abspath = os.path.abspath(self.filepath)

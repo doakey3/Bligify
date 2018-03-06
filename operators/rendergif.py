@@ -6,7 +6,8 @@ import subprocess
 from bpy_extras.io_utils import ExportHelper
 from .utilities.remove_bads import remove_bads
 from .utilities.update_progress import update_progress
-from .utilities.png import from_array
+from .utilities.is_gifsicle_installed import is_gifsicle_installed
+from .utilities.is_magick_installed import is_magick_installed
 
 
 def pngs_2_gifs(context, frames_folder):
@@ -89,24 +90,6 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     context.window_manager.progress_end()
 
 
-def make_empty_png(scene, filepath):
-    """
-    create a png matching the size of the scene resolution where
-    each pixel has an alpha of 0
-    """
-    res_x = scene.render.resolution_x
-    res_y = scene.render.resolution_y
-
-    color_array = []
-    for r in range(0, res_y):
-        color_array.append([])
-        for c in range(0, res_x):
-            color_array[-1].append([0, 0])
-
-    img = from_array(color_array, 'LA')
-    img.save(filepath)
-
-
 class RenderGIF(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
     bl_idname = "bligify.render_gif"
@@ -140,6 +123,16 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
             shutil.rmtree(frames_folder)
 
     def execute(self, context):
+        gifsicle_installed = is_gifsicle_installed()
+        if not gifsicle_installed:
+            self.report('ERROR', "Gifsicle must be installed for this to work.")
+            return {"FINISHED"}
+
+        magick_installed = is_magick_installed()
+        if not magick_installed:
+            self.report('ERROR', "Imagemagick must be installed for this to work.")
+            return {"FINISHED"}
+
         scene = context.scene
         self.original_filepath = scene.render.filepath
 
@@ -173,26 +166,6 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
             try:
                 frame_count = scene.frame_end - scene.frame_start + 1
                 if len(os.listdir(frames_folder)) == frame_count:
-
-                    if self.blank_first_frame:
-                        first_frame_name = sorted(os.listdir(frames_folder))[0]
-                        png = os.path.join(
-                            frames_folder, first_frame_name)
-                        abspath = os.path.abspath(self.filepath)
-                        folder_path = os.path.dirname(abspath)
-                        gif = os.path.join(folder_path, 'first_frame.gif')
-
-                        command = ['magick']
-
-                        if context.scene.gif_dither_conversion:
-                            command.append("+dither")
-
-                        command.append(png)
-                        command.append(gif)
-
-                        subprocess.call(command)
-
-                        make_empty_png(scene, png)
 
                     self.make_gif(context)
                     context.area.type = "SEQUENCE_EDITOR"

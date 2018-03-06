@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE.",
     "author": "doakey3",
-    "version": (1, 3, 5),
+    "version": (1, 3, 6),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -180,15 +180,6 @@ def initprop():
     bpy.types.Scene.delete_frames = bpy.props.BoolProperty(
         description="Delete the PNG frames folder after GIF is complete",
         default=True
-    )
-
-    bpy.types.Scene.odp_border_color = bpy.props.FloatVectorProperty(
-       subtype='COLOR_GAMMA',
-       description="Border color around the animated GIF",
-       size=3,
-       default=(0.2, 0.2, 0.2),
-       min=0.0,
-       max=1.0,
     )
 
 
