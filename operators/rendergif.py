@@ -125,12 +125,12 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         gifsicle_installed = is_gifsicle_installed()
         if not gifsicle_installed:
-            self.report('ERROR', "Gifsicle must be installed for this to work.")
+            self.report({'ERROR'}, "Gifsicle must be installed for this to work.")
             return {"FINISHED"}
 
         magick_installed = is_magick_installed()
         if not magick_installed:
-            self.report('ERROR', "Imagemagick must be installed for this to work.")
+            self.report({'ERROR'}, "Imagemagick must be installed for this to work.")
             return {"FINISHED"}
 
         scene = context.scene
