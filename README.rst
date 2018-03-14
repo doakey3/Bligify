@@ -37,7 +37,7 @@ Windows
 ~~~~~~~
 For ImageMagick_, use the installer provided on their downloads page.
 
-For Gifsicle, download it, then copy the gifsicle.exe file to the `C:\Windows\System32` folder. If you want to install it to a custom folder see `this tutorial video.`_
+For Gifsicle, download it, then copy the gifsicle.exe file to the `C:\\Windows\\System32` folder. If you want to install it to a custom folder see `this tutorial video.`_
 
 .. _this tutorial video.: https://www.youtube.com/watch?v=5gdhQyP9Eog
 
