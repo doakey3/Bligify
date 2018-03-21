@@ -97,11 +97,6 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
 
     filename_ext = ".gif"
 
-    blank_first_frame = bpy.props.BoolProperty(
-        description="When true, the first frame of the GIF will be replaced by empty space",
-        default=False
-    )
-
     @classmethod
     def poll(self, context):
         scene = context.scene
