@@ -35,16 +35,24 @@ Bligify requires ImageMagick_ and Gifsicle_ to work.
 
 Windows
 ~~~~~~~
+The easiest method is to install Bligify using the the `old 1.3.4
+release`_ which had Gifsicle and ImageMagick bundled into it. This
+method was stopped because users on other operating systems don't like
+downloading files they don't need.
+
+You can install ImageMagick and Gifsicle yourself and use the newer
+versions of the addon.
+
 For ImageMagick_, use the installer provided on their downloads page.
 
-For Gifsicle, download it, then copy the gifsicle.exe file to the `C:\\Windows\\System32` folder. If you want to install it to a custom folder see `this tutorial video.`_
+For Gifsicle_, download it, then follow `this tutorial video`_ to
+install it.
 
-.. _this tutorial video.: https://www.youtube.com/watch?v=5gdhQyP9Eog
-
-Alternatively, you can download the `old 1.3.4 release`_ of Bligify
-which had these executables packaged as part of the addon.
+.. _this tutorial video: https://www.youtube.com/watch?v=5gdhQyP9Eog
 
 .. _old 1.3.4 release: https://github.com/doakey3/Bligify/releases/tag/1.3.4
+
+.. _Gifsicle: https://www.lcdf.org/gifsicle/
 
 Mac
 ~~~
@@ -55,7 +63,8 @@ You can install both ImageMagick and Gifsicle using Homebrew_
 To install Homebrew, open a terminal and paste this command into the
 terminal and press enter:
 
-    `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+    `/usr/bin/ruby -e "$(curl -fsSL
+    https://raw.githubusercontent.com/Homebrew/install/master/install)"`
 
 To install ImageMagick, enter this into the terminal
 
@@ -129,12 +138,6 @@ Separate an animated GIF into it's frames. Convert those GIFs to PNGs
 and import the PNGs into the sequencer.
 
 .. image:: http://i.imgur.com/lhjCOCG.gif
-
-Bligify to ODP
-==============
-The older version of the addon had a feature which allowed users to
-export addons to a Libreoffice Impress presentation. This feature will
-be moved to a separate addon.
 
 .. _ImageMagick: https://www.imagemagick.org/script/index.php
 .. _Gifsicle: https://www.lcdf.org/gifsicle/
