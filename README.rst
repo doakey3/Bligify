@@ -31,28 +31,15 @@ If you have a video loaded into the VSE, you'll find Bligify in the
 
 Dependencies
 ------------
-Bligify requires ImageMagick_ and Gifsicle_ to work.
+Bligify uses ImageMagick_ and Gifsicle_ to work.
 
 Windows
 ~~~~~~~
-The easiest method is to install Bligify using the the `old 1.3.4
-release`_ which had Gifsicle and ImageMagick bundled into it. This
-method was stopped because users on other operating systems don't like
-downloading files they don't need.
+Install using the "Bligify_Windows.zip" file from the `latest release`_.
+This zip file contains the necessary executables from ImageMagick and
+Gifsicle for Windows 64 bit operating systems.
 
-You can install ImageMagick and Gifsicle yourself and use the newer
-versions of the addon.
-
-For ImageMagick_, use the installer provided on their downloads page.
-
-For Gifsicle_, download it, then follow `this tutorial video`_ to
-install it.
-
-.. _this tutorial video: https://www.youtube.com/watch?v=5gdhQyP9Eog
-
-.. _old 1.3.4 release: https://github.com/doakey3/Bligify/releases/tag/1.3.4
-
-.. _Gifsicle: https://www.lcdf.org/gifsicle/
+.. _latest_release: https://github.com/doakey3/Bligify/releases
 
 Mac
 ~~~
@@ -74,12 +61,6 @@ To install Gifsicle, enter this into the terminal
 
     `brew install gifsicle`
 
-**Note:** For now, On Mac, you must open Blender from the terminal for
-this addon to work. If you know how to fix this, please let me know. See
-`this Blender stack exchange question`_
-
-.. _this Blender stack exchange question: https://blender.stackexchange.com/questions/101639/addon-only-works-on-mac-if-blender-started-from-terminal
-
 Linux
 ~~~~~
 Installation of Gifsicle and ImageMagick is dependent on your system.
@@ -91,7 +72,6 @@ Repository as blender-plugin-bligify_
 
 Usage
 =====
-
 A `Tutorial Video`_ is available for an early version of the addon.
 
 .. _Tutorial Video: https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
