@@ -39,7 +39,7 @@ Install using the "Bligify_Windows.zip" file from the `latest release`_.
 This zip file contains the necessary executables from ImageMagick and
 Gifsicle for Windows 64 bit operating systems.
 
-.. _latest_release: https://github.com/doakey3/Bligify/releases
+.. _latest release: https://github.com/doakey3/Bligify/releases
 
 Mac
 ~~~
