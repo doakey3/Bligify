@@ -21,7 +21,12 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
     gif = ''.join(['"', abspath, '"'])
     info_path = os.path.join(frames_folder, 'info.txt')
     info = ''.join(['"', info_path, '"'])
-    command = ' '.join(['gifsicle', '--info', gif, '>', info])
+
+    gifsicle = "gifsicle"
+    if not context.scene.gifsicle_path.strip() == "":
+        gifsicle = '"' + context.scene.gifsicle_path.strip() + '"'
+
+    command = ' '.join([gifsicle, '--info', gif, '>', info])
     subprocess.call(command, shell=True)
 
     info_file = open(info_path, 'r')
@@ -57,9 +62,13 @@ def animated_gif_2_gifs(context, abspath, frames_folder):
     """Separate the animated gif into frames"""
     scene = context.scene
 
+    gifsicle = "gifsicle"
+    if not context.scene.gifsicle_path.strip() == "":
+        gifsicle = '"' + context.scene.gifsicle_path.strip() + '"'
+
     gif = ''.join(['"', abspath, '"'])
     frames = ''.join(['"', frames_folder, '/"'])
-    command = ' '.join(['gifsicle', '--unoptimize', '--explode',
+    command = ' '.join([gifsicle, '--unoptimize', '--explode',
                         gif, '--output', frames])
 
     print("Separating animated GIF into frames...")
@@ -73,6 +82,10 @@ def gifs_2_pngs(context, frames_folder):
     """
 
     images = list(sorted(os.listdir(frames_folder)))
+
+    magick = "magick"
+    if not context.scene.magick_path.strip() == "":
+        magick = '"' + context.scene.magick_path.strip() + '"'
 
     wm = context.window_manager
     wm.progress_begin(0, 100.0)
@@ -88,7 +101,7 @@ def gifs_2_pngs(context, frames_folder):
         out_img = os.path.join(frames_folder, out_name)
         out_img = ''.join(['"', out_img, '"'])
 
-        command = ' '.join(['magick', curr_img, out_img])
+        command = ' '.join([magick, curr_img, out_img])
 
         subprocess.call(command, shell=True)
 
@@ -116,16 +129,17 @@ class ImportGIF(bpy.types.Operator, ImportHelper):
         )
 
     def execute(self, context):
-        gifsicle_installed = is_gifsicle_installed()
-        print(gifsicle_installed)
-        if not gifsicle_installed:
-            self.report({'ERROR'}, "Gifsicle must be installed for this to work.")
-            return {"FINISHED"}
+        if context.scene.gifsicle_path.strip() == "":
+            gifsicle_installed = is_gifsicle_installed()
+            if not gifsicle_installed:
+                self.report({'ERROR'}, "This function requires Gifsicle to work.")
+                return {"FINISHED"}
 
-        magick_installed = is_magick_installed()
-        if not magick_installed:
-            self.report({'ERROR'}, "Imagemagick must be installed for this to work.")
-            return {"FINISHED"}
+        if context.scene.magick_path.strip() == "":
+            magick_installed = is_magick_installed()
+            if not magick_installed:
+                self.report({'ERROR'}, "This function requires Imagemagick to work.")
+                return {"FINISHED"}
 
         scene = context.scene
 

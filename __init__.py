@@ -1,4 +1,6 @@
 import bpy
+import os
+import sys
 from .operators.fpsadjust import FPSAdjust
 from .operators.importgif import ImportGIF
 from .operators.rendergif import RenderGIF
@@ -7,13 +9,21 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE.",
     "author": "doakey3",
-    "version": (1, 3, 6),
+    "version": (1, 3, 7),
     "blender": (2, 7, 8),
     "warning": "Requires imagemagick & gifsicle",
     "wiki_url": "https://github.com/doakey3/bligify",
     "tracker_url": "https://github.com/doakey3/bligify/issues",
     "category": "Sequencer"}
 
+class BligifyPreferences(bpy.types.AddonPreferences):
+    bl_idname = __package__
+
+    def draw(self, context):
+        scene = context.scene
+        layout = self.layout
+        layout.prop(scene, "gifsicle_path")
+        layout.prop(scene, "magick_path")
 
 class gif_UI(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
@@ -65,8 +75,52 @@ class gif_UI(bpy.types.Panel):
         row.operator("bligify.import_gif",
                      icon="LIBRARY_DATA_DIRECT")
 
+def make_absolute_gifsicle_path(context):
+    """Convert relative gifsicle path to absolute"""
+    prop = context.scene.gifsicle_path
+    prop = bpy.path.abspath(prop)
+
+def make_absolute_magick_path(context):
+    """Convert relative magick path to absolute"""
+    prop = context.scene.magick_path
+    prop = bpy.path.abspath(prop)
 
 def initprop():
+    default_gifsicle_path = ""
+    default_magick_path = ""
+
+    # OS X
+    if sys.platform == "darwin":
+        default_gifsicle_path = "/usr/local/bin/gifsicle"
+        default_magick_path = "/usr/local/bin/magick"
+    # Windows
+    elif sys.platform == "win32":
+        default_gifsicle_path = os.path.join(
+            os.path.dirname(__file__),
+            'executables',
+            'gifsicle.exe'
+        )
+        default_magick_path = os.path.join(
+            os.path.dirname(__file__),
+            'executables',
+            'convert.exe'
+        )
+
+    bpy.types.Scene.gifsicle_path = bpy.props.StringProperty(
+        name="Gifsicle Path",
+        description="Define path to the executable for gifsicle. If empty, Bligify will use the system installation of gifsicle.",
+        subtype="FILE_PATH",
+        default=default_gifsicle_path,
+        update=lambda self, context: make_absolute_gifsicle_path(context),
+        )
+
+    bpy.types.Scene.magick_path = bpy.props.StringProperty(
+        name="Magick Path",
+        description="Define path to the executable for Magick. If empty, Bligify will use the system installation of ImageMagick.",
+        subtype="FILE_PATH",
+        default=default_magick_path,
+        update=lambda self, context: make_absolute_magick_path(context),
+        )
 
     disposal_options = [
         ("none", "None", "Leave frame visible for future frames to build upon"),

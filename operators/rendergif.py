@@ -19,12 +19,17 @@ def pngs_2_gifs(context, frames_folder):
     wm = context.window_manager
     wm.progress_begin(0, 100.0)
 
+    magick = "magick"
+    if not context.scene.magick_path.strip() == "":
+        magick = context.scene.magick_path.strip()
+
     for i in range(total):
         update_progress("Converting PNG to GIF frames", i / total)
         wm.progress_update((i / total) * 100)
         png = os.path.join(frames_folder, images[i])
-        gif = os.path.splitext(png)[0] + ".gif"
-        command = ['magick']
+        gif = os.path.splitext(png)[0] + '.gif'
+
+        command = [magick]
         if context.scene.gif_dither_conversion:
             command.append("+dither")
 
@@ -41,7 +46,11 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
 
     scene = context.scene
 
-    command = ["gifsicle", "--no-background", "--disposal"]
+    gifsicle = "gifsicle"
+    if not context.scene.gifsicle_path.strip() == "":
+        gifsicle = '"' + context.scene.gifsicle_path.strip() + '"'
+
+    command = [gifsicle, "--no-background", "--disposal"]
 
     command.append(scene.gif_disposal)
 
@@ -118,15 +127,17 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
             shutil.rmtree(frames_folder)
 
     def execute(self, context):
-        gifsicle_installed = is_gifsicle_installed()
-        if not gifsicle_installed:
-            self.report({'ERROR'}, "Gifsicle must be installed for this to work.")
-            return {"FINISHED"}
+        if context.scene.gifsicle_path.strip() == "":
+            gifsicle_installed = is_gifsicle_installed()
+            if not gifsicle_installed:
+                self.report({'ERROR'}, "This function requires Gifsicle to work.")
+                return {"FINISHED"}
 
-        magick_installed = is_magick_installed()
-        if not magick_installed:
-            self.report({'ERROR'}, "Imagemagick must be installed for this to work.")
-            return {"FINISHED"}
+        if context.scene.magick_path.strip() == "":
+            magick_installed = is_magick_installed()
+            if not magick_installed:
+                self.report({'ERROR'}, "This function requires Imagemagick to work.")
+                return {"FINISHED"}
 
         scene = context.scene
         self.original_filepath = scene.render.filepath
