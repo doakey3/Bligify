@@ -9,40 +9,26 @@ Bligify
 
 Installation
 ============
+You will need to download the appropriate zip file for your system,
+navigate in Blender to File > User Preferences > Add-ons > Install
+Add-on from File... and install the zip file you downloaded.
 
-Download the repository.
+If you are using an operating system other than Windows, you will also
+need to install ImageMagick and Gifsicle.
 
-.. image:: http://i.imgur.com/NvrcI8I.gif
-
-Install the addon
-
-1. Open Blender.
-2. Go to File > User Preferences > Addons
-3. Click "Install From File" and navigate to the downloaded zip file
-4. Check the box next to "Sequencer:Bligify"
-5. Save user settings
-
-The addon interface is on the right side of the sequencer
-
-.. image:: http://i.imgur.com/QXvwNad.gif
-
-If you have a video loaded into the VSE, you'll find Bligify in the
-"Tools Tab."
-
-Dependencies
-------------
-Bligify uses ImageMagick_ and Gifsicle_ to work.
+You'll find the Bligify tool in the "Tools Tab."
 
 Windows
-~~~~~~~
+-------
 Install using the "Bligify_Windows.zip" file from the `latest release`_.
+
 This zip file contains the necessary executables from ImageMagick and
 Gifsicle for Windows 64 bit operating systems.
 
-.. _latest release: https://github.com/doakey3/Bligify/releases
-
 Mac
-~~~
+---
+Install using the "Bligify.zip" file from the `latest release`_.
+
 You can install both ImageMagick and Gifsicle using Homebrew_
 
 .. _Homebrew: https://brew.sh/
@@ -62,7 +48,9 @@ To install Gifsicle, enter this into the terminal
     `brew install gifsicle`
 
 Linux
-~~~~~
+-----
+Install using the "Bligify.zip" file from the `latest release`_.
+
 Installation of Gifsicle and ImageMagick is dependent on your system.
 
 If you're using Arch linux, this addon is available on the Arch User
@@ -121,3 +109,5 @@ and import the PNGs into the sequencer.
 
 .. _ImageMagick: https://www.imagemagick.org/script/index.php
 .. _Gifsicle: https://www.lcdf.org/gifsicle/
+
+.. _latest release: https://github.com/doakey3/Bligify/releases
