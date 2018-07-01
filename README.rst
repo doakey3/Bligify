@@ -64,6 +64,10 @@ A `Tutorial Video`_ is available for an early version of the addon.
 
 .. _Tutorial Video: https://www.youtube.com/watch?v=eCdI6hfqsK8&feature=youtu.be
 
+If you want to export gifs with transparency, set the "Shading" Alpha to Transparent and change the PNG type to RGBA in the render settings.
+
+.. image:: https://i.imgur.com/qSKNCZQ.jpg
+
 GIF Quality
 -----------
 
