@@ -3,7 +3,7 @@ import math
 from .utilities.get_open_channel import get_open_channel
 
 
-class FPSAdjust(bpy.types.Operator):
+class SEQUENCER_OT_fps_adjust(bpy.types.Operator):
 
     bl_label = "FPS Adjust"
     bl_idname = "bligify.fps_adjust"

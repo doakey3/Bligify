@@ -99,7 +99,7 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     context.window_manager.progress_end()
 
 
-class RenderGIF(bpy.types.Operator, ExportHelper):
+class SEQUENCER_OT_render_gif(bpy.types.Operator, ExportHelper):
     bl_label = "Render GIF"
     bl_idname = "bligify.render_gif"
     bl_description = "Render an animated GIF."
@@ -157,7 +157,7 @@ class RenderGIF(bpy.types.Operator, ExportHelper):
 
         wm = context.window_manager
         wm.modal_handler_add(self)
-        self.timer = wm.event_timer_add(0.5, context.window)
+        self.timer = wm.event_timer_add(0.5, window=context.window)
 
         scene.render.filepath = frames_folder
         bpy.ops.render.render('INVOKE_DEFAULT', animation=True)

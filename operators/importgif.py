@@ -114,15 +114,15 @@ def gifs_2_pngs(context, frames_folder):
             os.remove(os.path.join(frames_folder, images[i]))
 
 
-class ImportGIF(bpy.types.Operator, ImportHelper):
+class SEQUENCER_OT_import_gif(bpy.types.Operator, ImportHelper):
     bl_idname = "bligify.import_gif"
     bl_label = "GIF Import"
     bl_description = "Import animated GIF as an image sequence"
 
-    adjust_scene_for_gif_prop = bpy.props.BoolProperty(
+    adjust_scene_for_gif_prop: bpy.props.BoolProperty(
         name="Adjust Scene For GIF", default=True)
 
-    filter_glob = bpy.props.StringProperty(
+    filter_glob: bpy.props.StringProperty(
         default="*.gif",
         options={"HIDDEN"},
         maxlen=255,

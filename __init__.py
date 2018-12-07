@@ -1,22 +1,21 @@
 import bpy
 import os
 import sys
-from .operators.fpsadjust import FPSAdjust
-from .operators.importgif import ImportGIF
-from .operators.rendergif import RenderGIF
+from .operators import *
 
 bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE.",
     "author": "doakey3",
-    "version": (1, 3, 7),
-    "blender": (2, 7, 8),
+    "version": (1, 3, 8),
+    "blender": (2, 80, 0),
     "warning": "Requires imagemagick & gifsicle",
     "wiki_url": "https://github.com/doakey3/bligify",
     "tracker_url": "https://github.com/doakey3/bligify/issues",
     "category": "Sequencer"}
 
-class BligifyPreferences(bpy.types.AddonPreferences):
+
+class PREFERENCES_PT_exe_paths(bpy.types.AddonPreferences):
     bl_idname = __package__
 
     def draw(self, context):
@@ -25,7 +24,8 @@ class BligifyPreferences(bpy.types.AddonPreferences):
         layout.prop(scene, "gifsicle_path")
         layout.prop(scene, "magick_path")
 
-class gif_UI(bpy.types.Panel):
+
+class SEQUENCER_PT_ui(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_label = "Bligify"
@@ -42,13 +42,13 @@ class gif_UI(bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.prop(scene, "gif_disposal", text="Disposal", icon="GHOST")
+        row.prop(scene, "gif_disposal", text="Disposal", icon="FAKE_USER_OFF")
         row = box.row()
-        row.prop(scene, "gif_dither", text="Dither", icon="GROUP_VERTEX")
+        row.prop(scene, "gif_dither", text="Dither", icon="STRANDS")
         row = box.row()
         row.prop(scene, "gif_color_method", text="Filter", icon="FILTER")
         row = box.row()
-        row.prop(scene, "gif_color_map", text="Map", icon="IMAGE_RGB")
+        row.prop(scene, "gif_color_map", text="Map", icon="NODE_TEXTURE")
         special_row = box.row()
         special_row.prop(scene, "gif_mapfile", text="Map File")
         if scene.gif_color_map == "custom":
@@ -67,23 +67,26 @@ class gif_UI(bpy.types.Panel):
         row.prop(scene, "delete_frames", text="Cleanup on Completion")
         row = layout.row()
         row.operator("bligify.fps_adjust",
-                     icon="RECOVER_LAST")
+                     icon="MOD_TIME")
         row.prop(scene, "fps_adjustment", text="")
         row = layout.row()
         row.operator("bligify.render_gif",
                      icon="RENDER_ANIMATION")
         row.operator("bligify.import_gif",
-                     icon="LIBRARY_DATA_DIRECT")
+                     icon="FILE_FOLDER")
+
 
 def make_absolute_gifsicle_path(context):
     """Convert relative gifsicle path to absolute"""
     prop = context.scene.gifsicle_path
     prop = bpy.path.abspath(prop)
 
+
 def make_absolute_magick_path(context):
     """Convert relative magick path to absolute"""
     prop = context.scene.magick_path
     prop = bpy.path.abspath(prop)
+
 
 def initprop():
     default_gifsicle_path = ""
@@ -237,24 +240,25 @@ def initprop():
     )
 
 
+classes = [
+    PREFERENCES_PT_exe_paths,
+    SEQUENCER_PT_ui,
+    SEQUENCER_OT_fps_adjust,
+    SEQUENCER_OT_import_gif,
+    SEQUENCER_OT_render_gif
+]
+
 def register():
     initprop()
-    bpy.utils.register_module(__name__)
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
-
-    del bpy.types.Scene.gif_dither
-    del bpy.types.Scene.gif_disposal
-    del bpy.types.Scene.gif_color_method
-    del bpy.types.Scene.gif_color_map
-    del bpy.types.Scene.gif_mapfile
-    del bpy.types.Scene.gif_careful
-    del bpy.types.Scene.gif_dither_conversion
-    del bpy.types.Scene.delete_frames
-    del bpy.types.Scene.gif_colors
-    del bpy.types.Scene.gif_loop_count
-    del bpy.types.Scene.fps_adjustment
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
 
 
 if __name__ == "__main__":
