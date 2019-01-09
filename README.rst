@@ -9,6 +9,8 @@ Bligify
 
 Installation
 ============
+Use the correct release for your Blender version. Add-ons for Blender 2.80 and above will not work for Blender 2.79
+
 You will need to download the appropriate zip file for your system,
 navigate in Blender to File > User Preferences > Add-ons > Install
 Add-on from File... and install the zip file you downloaded.

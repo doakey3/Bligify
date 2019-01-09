@@ -25,7 +25,7 @@ class PREFERENCES_PT_exe_paths(bpy.types.AddonPreferences):
         layout.prop(scene, "magick_path")
 
 
-class SEQUENCER_PT_ui(bpy.types.Panel):
+class SEQUENCER_PT_bligify(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_label = "Bligify"
@@ -242,7 +242,7 @@ def initprop():
 
 classes = [
     PREFERENCES_PT_exe_paths,
-    SEQUENCER_PT_ui,
+    SEQUENCER_PT_bligify,
     SEQUENCER_OT_fps_adjust,
     SEQUENCER_OT_import_gif,
     SEQUENCER_OT_render_gif
