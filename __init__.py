@@ -34,7 +34,7 @@ class SEQUENCER_PT_bligify(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        return context.space_data.view_type == 'SEQUENCER'
+        return context.space_data.view_type == 'SEQUENCER' or context.space_data.view_type == "SEQUENCER_PREVIEW"
 
     def draw(self, context):
         scene = context.scene
