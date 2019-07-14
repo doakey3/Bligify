@@ -7,7 +7,7 @@ bl_info = {
     "name": "Bligify",
     "description": "export/import animated GIF from VSE.",
     "author": "doakey3",
-    "version": (1, 3, 8),
+    "version": (1, 3, 9),
     "blender": (2, 80, 0),
     "warning": "Requires imagemagick & gifsicle",
     "wiki_url": "https://github.com/doakey3/bligify",
@@ -34,7 +34,7 @@ class SEQUENCER_PT_bligify(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        return context.space_data.view_type == 'SEQUENCER' or context.space_data.view_type == "SEQUENCER_PREVIEW"
+        return context.space_data.view_type == "SEQUENCER" or context.space_data.view_type == "SEQUENCER_PREVIEW"
 
     def draw(self, context):
         scene = context.scene
