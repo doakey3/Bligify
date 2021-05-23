@@ -148,7 +148,7 @@ def initprop():
         ("ordered", "Ordered", "A good ordered dithering algorithm"),
         ("halftone", "Halftone", "For special effects"),
         ("squarehalftone", "Square Halftone", "For special effects"),
-        ("diagnoal", "Diagnoal", "For special effects")
+        ("diagonal", "Diagonal", "For special effects")
         ]
 
     bpy.types.Scene.gif_dither = bpy.props.EnumProperty(
