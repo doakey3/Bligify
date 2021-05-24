@@ -170,7 +170,7 @@ class SEQUENCER_OT_render_gif(bpy.types.Operator, ExportHelper):
 
         if event.type == 'TIMER':
             try:
-                frame_count = scene.frame_end - scene.frame_start + 1
+                frame_count = int((scene.frame_end - scene.frame_start) / scene.frame_step + 1)
                 if len(os.listdir(frames_folder)) == frame_count:
 
                     self.make_gif(context)
