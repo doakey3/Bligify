@@ -5,8 +5,8 @@ from .operators import *
 
 bl_info = {
     "name": "Bligify",
-    "description": "export/import animated GIF from VSE.",
-    "author": "doakey3",
+    "description": "exportation/importation de gifs par VSE",
+    "author": "doakey3, boubajoker",
     "version": (1, 3, 9),
     "blender": (2, 80, 0),
     "warning": "Requires imagemagick & gifsicle",
@@ -42,25 +42,25 @@ class SEQUENCER_PT_bligify(bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.prop(scene, "gif_disposal", text="Disposal", icon="FAKE_USER_OFF")
+        row.prop(scene, "gif_disposal", text="Dispositif", icon="FAKE_USER_OFF")
         row = box.row()
         row.prop(scene, "gif_dither", text="Dither", icon="STRANDS")
         row = box.row()
         row.prop(scene, "gif_color_method", text="Filter", icon="FILTER")
         row = box.row()
-        row.prop(scene, "gif_color_map", text="Map", icon="NODE_TEXTURE")
+        row.prop(scene, "gif_color_map", text="Carte", icon="NODE_TEXTURE")
         special_row = box.row()
-        special_row.prop(scene, "gif_mapfile", text="Map File")
+        special_row.prop(scene, "gif_mapfile", text="fichier de la Carte")
         if scene.gif_color_map == "custom":
             special_row.enabled = True
         else:
             special_row.enabled = False
         row = box.row()
-        row.prop(scene, "gif_careful", text="Careful")
-        row.prop(scene, "gif_optimize", text="Optimize")
+        row.prop(scene, "gif_careful", text="attention")
+        row.prop(scene, "gif_optimize", text="Optimiser")
         row = box.row()
-        row.prop(scene, "gif_colors", text="Colors")
-        row.prop(scene, "gif_loop_count", text="Loop")
+        row.prop(scene, "gif_colors", text="Coleurs")
+        row.prop(scene, "gif_loop_count", text="boucle")
         row = layout.row()
         row.prop(scene, "gif_dither_conversion", text="Dither Conversion")
         row = layout.row()
@@ -134,7 +134,7 @@ def initprop():
     bpy.types.Scene.gif_disposal = bpy.props.EnumProperty(
         name="Disposal Method",
         items=disposal_options,
-        description="Set the disposal method",
+        description="ajouter la disposition",
         default="background"
         )
 
@@ -167,7 +167,7 @@ def initprop():
     bpy.types.Scene.gif_color_method = bpy.props.EnumProperty(
         name="Color Reduction Method",
         items=color_methods,
-        description="Determine how a smaller colormap is chosen",
+        description="Determiner comment une petite carte de couleur is chosen",
         default="diversity"
         )
 
@@ -180,9 +180,9 @@ def initprop():
     ]
 
     bpy.types.Scene.gif_color_map = bpy.props.EnumProperty(
-        name="Color Map",
+        name="carte de couleur",
         items=color_maps,
-        description="Use a color map so that each pixel in the image is\nchanged to the closest match in colormap.\n\n(See Gifsicle's Manual Page for more info)",
+        description="Utiliser une carte de couleur donc that each pixel dans l' image is\nchanged to the closest match in colormap.\n\n(See Gifsicle's Manual Page for more info)",
         default="none",
         )
 
