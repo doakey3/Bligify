@@ -56,12 +56,13 @@ class SEQUENCER_PT_bligify(bpy.types.Panel):
         else:
             special_row.enabled = False
         row = box.row()
-        row.prop(scene, "gif_careful", text="Careful")
+        row.prop(scene, "gif_lossy", text="Lossy")
         row.prop(scene, "gif_optimize", text="Optimize")
         row = box.row()
         row.prop(scene, "gif_colors", text="Colors")
         row.prop(scene, "gif_loop_count", text="Loop")
         row = layout.row()
+        row.prop(scene, "gif_careful", text="Careful")
         row.prop(scene, "gif_dither_conversion", text="Dither Conversion")
         row = layout.row()
         row.prop(scene, "delete_frames", text="Cleanup on Completion")
@@ -212,6 +213,14 @@ def initprop():
         default=256,
         max=256,
         min=2,
+        )
+    
+    bpy.types.Scene.gif_lossy = bpy.props.IntProperty(
+        name="GIF Colors",
+        description="Optimisation using Lossy GIF encoder",
+        default=0,
+        max=200,
+        min=0,
         )
 
     bpy.types.Scene.gif_loop_count = bpy.props.IntProperty(
