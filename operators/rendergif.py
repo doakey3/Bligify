@@ -57,6 +57,9 @@ def gifs_2_animated_gif(context, abspath, frames_folder):
     if not scene.gif_dither == "none":
         command.append('--dither=' + scene.gif_dither)
 
+    if not scene.gif_lossy == "none":
+        command.append('--lossy=' + str(scene.gif_lossy))
+
     command.append('--color-method=' + scene.gif_color_method)
 
     if not scene.gif_color_map == "none":
