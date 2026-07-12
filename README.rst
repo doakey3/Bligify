@@ -1,6 +1,5 @@
 i have made 2 modofications
-1 edit a py file to get gif import working how python works now
-2 defalt imagemagic and gifsicle paths are now labled how they work in linux mint.
+1 edit a py file to get gif import working and fps adjust how python works now
 
 
 for exports
