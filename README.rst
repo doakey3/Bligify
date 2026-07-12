@@ -1,3 +1,16 @@
+i have made 2 modofications
+1 edit a py file to get gif import and fps adjust working how python works now
+2 defalt imagemagic and gifsicle paths are now labled how they work in linux mint.
+
+
+for exports
+https://www.youtube.com/watch?v=1hgGdppoic4
+and
+for imports
+https://www.youtube.com/watch?v=xajKBjuc6Sg
+
+
+
 .. image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=79D9YLVGVYNHN
 

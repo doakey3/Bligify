@@ -87,7 +87,7 @@ def apply_speed_modifiers(scene, strips, fps, speed_factor):
             channel=speed_channel,
             frame_start=strip.frame_final_start,
             frame_end=strip.frame_final_end,
-            seq1=strip
+            input1=strip
             )
         speed_strip.use_default_fade = False
         speed_strip.speed_factor = speed_factor

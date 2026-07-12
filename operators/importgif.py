@@ -54,7 +54,7 @@ def adjust_scene_for_gif(context, abspath, frames_folder):
             break
     scene.render.resolution_x = x
     scene.render.resolution_y = y
-    scene.render.fps = fps
+    scene.render.fps = int(fps)
     scene.render.fps_base = 1
 
 
