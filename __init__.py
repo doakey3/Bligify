@@ -21,8 +21,8 @@ class PREFERENCES_PT_exe_paths(bpy.types.AddonPreferences):
     def draw(self, context):
         scene = context.scene
         layout = self.layout
-        layout.prop(scene, "/bin/gifsicle")
-        layout.prop(scene, "/usr/bin/convert")
+        layout.prop(scene, "")
+        layout.prop(scene, "")
 
 
 class SEQUENCER_PT_bligify(bpy.types.Panel):
